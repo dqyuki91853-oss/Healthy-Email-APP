@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Caveat:wght@400;600&family=Noto+Serif+SC:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* ── Brand tokens (from color.png) ── */
+  --color-cream: #F8E9BB;
+  --color-teal: #63AD96;
+  --color-gold: #EBC97F;
+  --color-coral: #DD7C64;
+  --color-blush: #F1C6CD;
+
+  /* ── Surfaces ── */
+  --color-bg: #FAF8F4;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #F5F0E8;
+  --color-border: #E8E0D4;
+
+  /* ── Text ── */
+  --color-text: #2C2C2C;
+  --color-muted: #8A8A8A;
+  --color-text-on-teal: #FFFFFF;
+
+  /* ── Semantic alert colors ── */
+  --color-green: #63AD96;
+  --color-yellow: #B8860B;
+  --color-orange: #DD7C64;
+  --color-red: #C45A42;
+
+  /* ── Actions ── */
+  --color-accent: #63AD96;
+  --color-accent-hover: #DD7C64;
+
+  /* ── Navigation (light sidebar) ── */
+  --color-nav: #FAF8F4;
+  --color-nav-text: #2C2C2C;
+  --color-nav-muted: #8A8A8A;
+
+  /* ── Radius ── */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-pill: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-card: 0 4px 24px rgba(44, 44, 44, 0.06);
+  --shadow-float: 0 8px 32px rgba(44, 44, 44, 0.10);
+
+  /* ── Typography ── */
+  --font-sans: "Plus Jakarta Sans", "SF Pro Text", system-ui, sans-serif;
+  --font-accent: "Caveat", cursive;
+}
+
+/* ── Base ── */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.65;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ── Animations ── */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Card hover ── */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-float);
+}
+
+/* ── Page fade-in ── */
+.page-enter {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* ── Mobile safe area ── */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── Accessibility ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
