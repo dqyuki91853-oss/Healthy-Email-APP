@@ -139,3 +139,9 @@ export function computeWuyinListeningWindow(
     completedInWindow,
   }
 }
+
+/** 是否应显示顶部 Toast（非 closed、且未完成今日收工练习） */
+export function shouldShowListeningToast(win: WuyinListeningWindow): boolean {
+  if (win.completedInWindow || win.tier === 'closed') return false
+  return win.tier === 'primary' || win.tier === 'secondary'
+}

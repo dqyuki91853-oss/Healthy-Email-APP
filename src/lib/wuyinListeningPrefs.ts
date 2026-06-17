@@ -65,6 +65,10 @@ export function saveWuyinListeningPrefs(patch: Partial<WuyinListeningPrefs>): Wu
   return next
 }
 
+export function clearListeningReminderSuppress(): WuyinListeningPrefs {
+  return saveWuyinListeningPrefs({ snoozeUntil: null, dismissDate: null })
+}
+
 /** 是否暂时隐藏提醒条（不含设置总开关） */
 export function isListeningReminderSuppressed(now = new Date()): boolean {
   const prefs = read()

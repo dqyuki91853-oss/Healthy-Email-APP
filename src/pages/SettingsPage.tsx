@@ -15,6 +15,7 @@ import { buildSubhealthExport, parseSubhealthExport } from '../lib/dataSync'
 import { getAllHistoryPatterns } from '../services/dietHistory'
 import { isTauri } from '../lib/platform'
 import {
+  clearListeningReminderSuppress,
   getWuyinListeningPrefs,
   saveWuyinListeningPrefs,
   WUYIN_GATE_LEAD_DEFAULT_MIN,
@@ -299,6 +300,17 @@ export function SettingsPage() {
             在 personalSleepGate 之前多少分钟开始高亮聆听窗口（默认 {WUYIN_GATE_LEAD_DEFAULT_MIN} 分钟）
           </span>
         </label>
+        <button
+          type="button"
+          className="mt-3 text-xs text-[var(--color-muted)] underline hover:text-[var(--color-text)]"
+          onClick={() => {
+            clearListeningReminderSuppress()
+            setWuyinPrefsSaved(true)
+            window.setTimeout(() => setWuyinPrefsSaved(false), 2000)
+          }}
+        >
+          清除「稍后 / 今日不再提醒」屏蔽
+        </button>
       </Card>
 
       <Card>

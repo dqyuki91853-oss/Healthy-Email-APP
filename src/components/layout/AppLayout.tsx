@@ -3,12 +3,14 @@ import { Plus } from 'lucide-react'
 import { LeftSidebar } from './LeftSidebar'
 import { TopNav } from './TopNav'
 import { BottomNav } from './BottomNav'
+import { DojoListeningToastHost } from '../home/DojoListeningToastHost'
 
 export function AppLayout() {
   const navigate = useNavigate()
 
   return (
     <div className="flex min-h-screen">
+      <DojoListeningToastHost />
       {/* ── Desktop Left Sidebar (280px) ── */}
       <LeftSidebar />
 

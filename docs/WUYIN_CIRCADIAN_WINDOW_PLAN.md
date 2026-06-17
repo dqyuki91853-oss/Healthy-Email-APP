@@ -75,14 +75,16 @@ interface WuyinListeningWindow {
 
 - [x] `src/engine/wuyinListeningWindow.ts`
 - [x] `wellnessSnapshot` 接入
-- [x] `DojoListeningWindowStrip.tsx`
+- [x] 首页右上角浮动 Toast（`DojoListeningToast` + `DojoListeningToastHost`，portal 到 body；替代原内嵌 `DojoListeningWindowStrip`）
 - [x] `CircadianRiverStrip` 叠加五音适宜带
 - [x] 与 `wuyinPracticeStreak` / `practicedWuyinToday` 联动 completed 态
+- [x] `shouldShowListeningToast` — primary + secondary（倒计时）均显示；completed / closed 隐藏
 
 ### Phase W2 — 设置（1–2h）
 
 - [x] Settings：启用收工五音提醒、gate 偏移（默认 15min）
 - [x] localStorage dismiss / snooze（30min 稍后 / 今日不再提醒）
+- [x] 设置页「清除稍后 / 今日不再提醒屏蔽」
 
 ### Phase W3 — App 本地通知（打包时）
 

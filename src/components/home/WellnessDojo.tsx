@@ -18,7 +18,6 @@ import { CircadianRiverStrip } from '../tcm/dojo/CircadianRiverStrip'
 import { WuyinPracticeEntry } from '../tcm/dojo/WuyinPracticeEntry'
 import { DojoBreathPhaseCue } from '../tcm/dojo/DojoBreathPhaseCue'
 import { DojoWuyinDetails } from '../tcm/dojo/DojoWuyinDetails'
-import { DojoListeningWindowStrip } from '../tcm/dojo/DojoListeningWindowStrip'
 
 interface Props {
   wuyin?: WuyinPrescription | null
@@ -92,7 +91,7 @@ export function WellnessDojo({ wuyin, circadian }: Props) {
   if (!wuyin && !circadian) return null
 
   return (
-    <div className="wellness-dojo wellness-section-v3">
+    <div id="wellness-dojo" className="wellness-dojo wellness-section-v3">
       <div className="wellness-dojo__bridge" aria-hidden />
       <div className="wellness-dojo__inner">
         <GuofengInkWashBg toneId={displayPrescription?.toneId} />
@@ -145,16 +144,6 @@ export function WellnessDojo({ wuyin, circadian }: Props) {
                 }
               />
             </div>
-
-            {listeningWindow && circadian && (
-              <div className="relative z-10">
-                <DojoListeningWindowStrip
-                  window={listeningWindow}
-                  prescription={displayPrescription}
-                  onListen={() => waterfallRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-                />
-              </div>
-            )}
 
             <div className="relative z-10 mb-4" ref={waterfallRef}>
               <WuyinPrescriptionWaterfall
