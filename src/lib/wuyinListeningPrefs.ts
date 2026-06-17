@@ -9,6 +9,8 @@ export const WUYIN_SNOOZE_MINUTES = 30
 export interface WuyinListeningPrefs {
   enabled: boolean
   gateLeadMin: number
+  /** Mac App 收工窗口系统本地通知（Web 忽略） */
+  nativeNotify: boolean
   /** ISO — 稍后提醒截止 */
   snoozeUntil: string | null
   /** YYYY-MM-DD — 今日不再提醒 */
@@ -18,6 +20,7 @@ export interface WuyinListeningPrefs {
 const DEFAULTS: WuyinListeningPrefs = {
   enabled: true,
   gateLeadMin: WUYIN_GATE_LEAD_DEFAULT_MIN,
+  nativeNotify: true,
   snoozeUntil: null,
   dismissDate: null,
 }
@@ -34,6 +37,7 @@ function read(): WuyinListeningPrefs {
     return {
       enabled: parsed.enabled ?? DEFAULTS.enabled,
       gateLeadMin: clampGateLead(parsed.gateLeadMin ?? DEFAULTS.gateLeadMin),
+      nativeNotify: parsed.nativeNotify ?? DEFAULTS.nativeNotify,
       snoozeUntil: parsed.snoozeUntil ?? null,
       dismissDate: parsed.dismissDate ?? null,
     }
@@ -66,6 +70,13 @@ export function saveWuyinListeningPrefs(patch: Partial<WuyinListeningPrefs>): Wu
 }
 
 export function clearListeningReminderSuppress(): WuyinListeningPrefs {
+  return saveWuyinListeningPrefs({ snoozeUntil: null, dismissDate: null })
+}
+
+/** 整页刷新后清除稍后/今日不再提醒，使 Toast 重新出现（保留 enabled、gateLeadMin） */
+export function resetListeningReminderOnPageLoad(): WuyinListeningPrefs {
+  const prefs = read()
+  if (prefs.snoozeUntil == null && prefs.dismissDate == null) return prefs
   return saveWuyinListeningPrefs({ snoozeUntil: null, dismissDate: null })
 }
 

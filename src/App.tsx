@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AppLayout } from './components/layout/AppLayout'
 import { PrivacyBanner } from './components/layout/PrivacyBanner'
 import { useAppStore } from './store/useAppStore'
+import { resetListeningReminderOnPageLoad } from './lib/wuyinListeningPrefs'
 import { HomePage } from './pages/HomePage'
 import { DashboardPage } from './pages/DashboardPage'
 import { UploadPage } from './pages/UploadPage'
@@ -22,6 +23,7 @@ export default function App() {
   const loading = useAppStore((s) => s.loading)
 
   useEffect(() => {
+    resetListeningReminderOnPageLoad()
     loadData()
   }, [loadData])
 

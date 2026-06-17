@@ -36,17 +36,17 @@ function windowProgress(win: WuyinListeningWindow, isActive: boolean): number {
 }
 
 function ToastProgressRing({ progress, label }: { progress: number; label: string }) {
-  const r = 17
+  const r = 22
   const c = 2 * Math.PI * r
   const offset = c * (1 - progress)
 
   return (
     <div className="dojo-listening-toast__ring-wrap">
-      <svg className="dojo-listening-toast__ring" viewBox="0 0 44 44" aria-hidden>
-        <circle cx="22" cy="22" r={r} className="dojo-listening-toast__ring-track" />
+      <svg className="dojo-listening-toast__ring" viewBox="0 0 52 52" aria-hidden>
+        <circle cx="26" cy="26" r={r} className="dojo-listening-toast__ring-track" />
         <circle
-          cx="22"
-          cy="22"
+          cx="26"
+          cy="26"
           r={r}
           className="dojo-listening-toast__ring-fill"
           strokeDasharray={c}
@@ -118,38 +118,38 @@ export function DojoListeningToast({ window: win }: Props) {
               <ToastProgressRing progress={progress} label={ringLabel} />
             </div>
 
-          <p className="dojo-listening-toast__time">
-            {win.windowStart} – {win.windowEnd}
-            <span className="dojo-listening-toast__meta">{tone.label}音 · {tone.organLabel}</span>
-          </p>
-
-          <p className="dojo-listening-toast__body">{win.reasonText}</p>
-
-          {!isActive && win.minutesUntilOpen > 0 && (
-            <p className="dojo-listening-toast__countdown">
-              距窗口开启约 {formatCountdown(win.minutesUntilOpen)}
+            <p className="dojo-listening-toast__time">
+              {win.windowStart} – {win.windowEnd}
+              <span className="dojo-listening-toast__meta">{tone.label}音 · {tone.organLabel}</span>
             </p>
-          )}
 
-          {isActive && win.minutesUntilClose > 0 && (
-            <p className="dojo-listening-toast__countdown dojo-listening-toast__countdown--live">
-              窗口余 {formatCountdown(win.minutesUntilClose)}
-            </p>
-          )}
+            <p className="dojo-listening-toast__body">{win.reasonText}</p>
 
-          <button type="button" className="dojo-listening-toast__cta" onClick={handleGo}>
-            {isActive && win.suggestedMode === 'hum' ? '去跟哼 →' : '去看看 →'}
-          </button>
+            {!isActive && win.minutesUntilOpen > 0 && (
+              <p className="dojo-listening-toast__countdown">
+                距窗口开启约 {formatCountdown(win.minutesUntilOpen)}
+              </p>
+            )}
 
-          <div className="dojo-listening-toast__footer">
-            <button type="button" onClick={() => snoozeListeningReminder(WUYIN_SNOOZE_MINUTES)}>
-              稍后 {WUYIN_SNOOZE_MINUTES} 分钟
+            {isActive && win.minutesUntilClose > 0 && (
+              <p className="dojo-listening-toast__countdown dojo-listening-toast__countdown--live">
+                窗口余 {formatCountdown(win.minutesUntilClose)}
+              </p>
+            )}
+
+            <button type="button" className="dojo-listening-toast__cta" onClick={handleGo}>
+              {isActive && win.suggestedMode === 'hum' ? '去跟哼 →' : '去看看 →'}
             </button>
-            <span aria-hidden>·</span>
-            <button type="button" onClick={() => dismissListeningReminderForToday()}>
-              今日不再提醒
-            </button>
-          </div>
+
+            <div className="dojo-listening-toast__footer">
+              <button type="button" onClick={() => snoozeListeningReminder(WUYIN_SNOOZE_MINUTES)}>
+                稍后 {WUYIN_SNOOZE_MINUTES} 分钟
+              </button>
+              <span aria-hidden>·</span>
+              <button type="button" onClick={() => dismissListeningReminderForToday()}>
+                今日不再提醒
+              </button>
+            </div>
           </div>
         </div>
       </div>

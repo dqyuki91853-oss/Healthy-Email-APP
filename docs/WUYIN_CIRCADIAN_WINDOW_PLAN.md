@@ -11,7 +11,7 @@
 | # | 决策 | 选择 |
 |---|------|------|
 | 1 | 时间模型 | **收工主窗口（A）** + **传统时辰对照（D）**；mood 处方优先，时辰仅微调文案 |
-| 2 | 提醒渠道 | **先做规则 + App 内 UI**；Capacitor 本地通知留到 App 打包（Phase W3） |
+| 2 | 提醒渠道 | **Web Toast + Mac App 本地通知**（Tauri）；Capacitor 留待未来移动端 |
 | 3 | 练习类型 | **跟哼 + 试听**；收工段偏跟哼，白天偏轻听 |
 | 4 | 窗口内已练 | **收起提醒**，显示「今日收工练习已完成 ✓」 |
 | 5 | 窗口偏移 | **personalSleepGate 提前 15 分钟**开始高亮/提醒 |
@@ -86,10 +86,13 @@ interface WuyinListeningWindow {
 - [x] localStorage dismiss / snooze（30min 稍后 / 今日不再提醒）
 - [x] 设置页「清除稍后 / 今日不再提醒屏蔽」
 
-### Phase W3 — App 本地通知（打包时）
+### Phase W3 — App 本地通知（Mac Tauri）
 
-- [ ] `@capacitor/local-notifications`
-- [ ] deep link → `/practice/wuyin` 或首页道场
+- [x] `@tauri-apps/plugin-notification`（项目为 Tauri 桌面 App，非 Capacitor）
+- [x] 收工窗口 `windowStart` 定时本地通知
+- [x] 点击通知深链 → `/practice/wuyin`（跟哼）或首页 `#wellness-dojo`
+- [x] 设置页「Mac 系统本地通知」开关（`nativeNotify`）
+- [x] `WuyinNotificationBridge` — 随 wellness / prefs 自动 reschedule
 
 ### Phase W4 — 可选
 

@@ -49,6 +49,7 @@ export function SettingsPage() {
   const [askedToday, setAskedToday] = useState(0)
   const [saved, setSaved] = useState(false)
   const [wuyinReminderEnabled, setWuyinReminderEnabled] = useState(true)
+  const [wuyinNativeNotify, setWuyinNativeNotify] = useState(true)
   const [wuyinGateLeadMin, setWuyinGateLeadMin] = useState(WUYIN_GATE_LEAD_DEFAULT_MIN)
   const [wuyinPrefsSaved, setWuyinPrefsSaved] = useState(false)
 
@@ -65,12 +66,14 @@ export function SettingsPage() {
     })
     const wuyinPrefs = getWuyinListeningPrefs()
     setWuyinReminderEnabled(wuyinPrefs.enabled)
+    setWuyinNativeNotify(wuyinPrefs.nativeNotify)
     setWuyinGateLeadMin(wuyinPrefs.gateLeadMin)
   }, [])
 
   const saveWuyinPrefs = (patch: Parameters<typeof saveWuyinListeningPrefs>[0]) => {
     const next = saveWuyinListeningPrefs(patch)
     setWuyinReminderEnabled(next.enabled)
+    setWuyinNativeNotify(next.nativeNotify)
     setWuyinGateLeadMin(next.gateLeadMin)
     setWuyinPrefsSaved(true)
     window.setTimeout(() => setWuyinPrefsSaved(false), 2000)
@@ -271,12 +274,12 @@ export function SettingsPage() {
           )}
         </div>
         <p className="mb-3 text-xs text-[var(--color-muted)]">
-          首页道场显示「收工聆听窗口」提示，结合个人作息与五音处方。App 打包后将支持系统本地通知。
+          首页 Toast 提示收工聆听窗口；Mac App 可在窗口开启时推送系统通知。
         </p>
         <label className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-medium">启用收工五音提醒</p>
-            <p className="text-xs text-[var(--color-muted)]">关闭后不再显示聆听窗口条（已完成练习仍会提示）</p>
+            <p className="text-xs text-[var(--color-muted)]">关闭后不再显示 Toast（已完成练习仍会提示）</p>
           </div>
           <input
             type="checkbox"
@@ -285,6 +288,22 @@ export function SettingsPage() {
             onChange={(e) => saveWuyinPrefs({ enabled: e.target.checked })}
           />
         </label>
+        {isTauri() && (
+          <label className="mt-4 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium">Mac 系统本地通知</p>
+              <p className="text-xs text-[var(--color-muted)]">
+                在收工窗口开启时刻推送；点击跳转跟哼练习或首页道场
+              </p>
+            </div>
+            <input
+              type="checkbox"
+              className="h-5 w-5 shrink-0 rounded accent-[var(--color-teal)]"
+              checked={wuyinNativeNotify}
+              onChange={(e) => saveWuyinPrefs({ nativeNotify: e.target.checked })}
+            />
+          </label>
+        )}
         <label className="mt-4 block text-sm">
           窗口提前量（分钟）
           <input
