@@ -2,7 +2,7 @@
 
 > **版本**：v1 · 2026-06-11  
 > **前置**：Phase 1–6 数字道场 Web 预览（tag `v4-dojo-web`）  
-> **状态**：待实施 Phase W1
+> **状态**：Phase W1 已完成（Web）；Phase W2 待实施
 
 ---
 
@@ -73,11 +73,11 @@ interface WuyinListeningWindow {
 
 ### Phase W1 — 规则 + UI（2–3h）
 
-- [ ] `src/engine/wuyinListeningWindow.ts`
-- [ ] `wellnessSnapshot` 接入
-- [ ] `DojoListeningWindowStrip.tsx`
-- [ ] `CircadianRiverStrip` 叠加五音适宜带
-- [ ] 与 `wuyinPracticeStreak` / `practicedWuyinToday` 联动 completed 态
+- [x] `src/engine/wuyinListeningWindow.ts`
+- [x] `wellnessSnapshot` 接入
+- [x] `DojoListeningWindowStrip.tsx`
+- [x] `CircadianRiverStrip` 叠加五音适宜带
+- [x] 与 `wuyinPracticeStreak` / `practicedWuyinToday` 联动 completed 态
 
 ### Phase W2 — 设置（1–2h）
 

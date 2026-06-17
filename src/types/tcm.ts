@@ -39,3 +39,24 @@ export interface MeridianWindow {
   suggestionText: string
   citationIds: string[]
 }
+
+export type WuyinListeningTier = 'primary' | 'secondary' | 'closed'
+export type WuyinSuggestedMode = 'hum' | 'listen' | 'either'
+
+/** 子午流注 × 五音聆听窗口（Phase W1） */
+export interface WuyinListeningWindow {
+  tier: WuyinListeningTier
+  suggestedMode: WuyinSuggestedMode
+  /** personalSleepGate − 15min */
+  windowStart: string
+  windowEnd: string
+  phaseLabel: CircadianPhaseLabel
+  meridianWindowId: string | null
+  toneHint: WuyinToneId
+  meridianToneHint?: WuyinToneId
+  reasonText: string
+  minutesUntilOpen: number
+  minutesUntilClose: number
+  /** 今日收工窗口内已跟哼 → 收起提醒 */
+  completedInWindow: boolean
+}

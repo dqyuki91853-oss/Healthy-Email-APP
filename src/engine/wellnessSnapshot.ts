@@ -11,6 +11,8 @@ import { computeBodyWeather } from './bodyWeather'
 import { computeMoodInference } from './moodInference'
 import { computeWuyinPrescription } from './wuyinPrescription'
 import { computePersonalCircadian } from './tcmCircadian'
+import { computeWuyinListeningWindow } from './wuyinListeningWindow'
+import { practicedWuyinToday } from '../lib/wuyinPracticeStreak'
 
 export function buildWellnessSnapshot(
   rows: DailyWatchRow[],
@@ -28,6 +30,9 @@ export function buildWellnessSnapshot(
   const mood = computeMoodInference(rows, baselines, voiceLogs, targetDate)
   const wuyin = computeWuyinPrescription(mood, bodyWeather)
   const circadian = computePersonalCircadian(rows)
+  const listeningWindow = computeWuyinListeningWindow(circadian, wuyin, {
+    practicedToday: practicedWuyinToday(),
+  })
 
   return {
     date: targetDate,
@@ -35,5 +40,6 @@ export function buildWellnessSnapshot(
     mood,
     wuyin,
     circadian,
+    listeningWindow,
   }
 }

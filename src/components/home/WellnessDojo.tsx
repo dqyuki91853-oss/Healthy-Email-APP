@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { WuyinPrescription, PersonalCircadianPlan } from '../../types/tcm'
 import type { MoodTag } from '../../types/mood'
 import { WUYIN_PRESCRIPTION_RULES, WUYIN_TONES } from '../../config/wuyinToneMap'
@@ -7,6 +7,7 @@ import { getWuyinContextLine } from '../../lib/wuyinContextLine'
 import { getPracticeEntryHint } from '../../lib/wuyinPracticeStreak'
 import { hapticPulse } from '../../lib/haptic'
 import { useWuyinPracticeStats } from '../../hooks/useWuyinPracticeStats'
+import { useWuyinListeningWindow } from '../../hooks/useWuyinListeningWindow'
 import { useAppStore } from '../../store/useAppStore'
 import { WuyinToneWheel } from '../tcm/dojo/WuyinToneWheel'
 import { MoodBubbleBar } from '../tcm/dojo/MoodBubbleBar'
@@ -16,6 +17,7 @@ import { CircadianRiverStrip } from '../tcm/dojo/CircadianRiverStrip'
 import { WuyinPracticeEntry } from '../tcm/dojo/WuyinPracticeEntry'
 import { DojoBreathPhaseCue } from '../tcm/dojo/DojoBreathPhaseCue'
 import { DojoWuyinDetails } from '../tcm/dojo/DojoWuyinDetails'
+import { DojoListeningWindowStrip } from '../tcm/dojo/DojoListeningWindowStrip'
 
 interface Props {
   wuyin?: WuyinPrescription | null
@@ -51,6 +53,7 @@ export function WellnessDojo({ wuyin, circadian }: Props) {
   const [activeTrack, setActiveTrack] = useState<WuyinAudioTrack | null>(null)
   const practiceStats = useWuyinPracticeStats()
   const streakHint = getPracticeEntryHint(practiceStats)
+  const waterfallRef = useRef<HTMLDivElement>(null)
 
   const effectiveMood = selectedMood ?? inferredMood ?? 'unknown'
 
@@ -59,6 +62,8 @@ export function WellnessDojo({ wuyin, circadian }: Props) {
     if (selectedMood) return prescriptionForMood(wuyin, selectedMood)
     return wuyin
   }, [wuyin, selectedMood])
+
+  const listeningWindow = useWuyinListeningWindow(circadian, displayPrescription)
 
   const contextLine = useMemo(() => {
     if (!displayPrescription) return ''
@@ -139,7 +144,17 @@ export function WellnessDojo({ wuyin, circadian }: Props) {
               />
             </div>
 
-            <div className="relative z-10 mb-4">
+            {listeningWindow && circadian && (
+              <div className="relative z-10">
+                <DojoListeningWindowStrip
+                  window={listeningWindow}
+                  prescription={displayPrescription}
+                  onListen={() => waterfallRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                />
+              </div>
+            )}
+
+            <div className="relative z-10 mb-4" ref={waterfallRef}>
               <WuyinPrescriptionWaterfall
                 tracks={tracks}
                 activeTrackId={activeTrack?.id ?? null}
@@ -159,7 +174,11 @@ export function WellnessDojo({ wuyin, circadian }: Props) {
 
         {circadian && (
           <div className={`relative z-10 ${wuyin ? 'mt-5' : ''}`}>
-            <CircadianRiverStrip plan={circadian} watchRows={watchRows} />
+            <CircadianRiverStrip
+              plan={circadian}
+              watchRows={watchRows}
+              listeningWindow={listeningWindow}
+            />
           </div>
         )}
       </div>

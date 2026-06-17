@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import type { PersonalCircadianPlan } from '../../../types/tcm'
+import type { PersonalCircadianPlan, WuyinListeningWindow } from '../../../types/tcm'
+import { WUYIN_GATE_LEAD_MIN } from '../../../engine/wuyinListeningWindow'
 import type { DailyWatchRow } from '../../../types/health'
 import { CircadianExpandPanel } from '../CircadianExpandPanel'
 import { TCM_MERIDIAN_SCHEDULE } from '../../../config/tcmMeridianSchedule'
@@ -9,10 +10,11 @@ import { SleepPhaseSparkline } from './SleepPhaseSparkline'
 interface Props {
   plan: PersonalCircadianPlan
   watchRows?: DailyWatchRow[]
+  listeningWindow?: WuyinListeningWindow | null
 }
 
 /** 时间长河 + Watch 睡眠相位（Phase 2C） */
-export function CircadianRiverStrip({ plan, watchRows = [] }: Props) {
+export function CircadianRiverStrip({ plan, watchRows = [], listeningWindow }: Props) {
   const [expanded, setExpanded] = useState(false)
   const now = new Date()
   const nowMin = now.getHours() * 60 + now.getMinutes()
@@ -29,6 +31,8 @@ export function CircadianRiverStrip({ plan, watchRows = [] }: Props) {
   }
   const gatePct = toPct(gateMin)
   const onsetPct = toPct(onsetMin)
+  const listenStartPct = toPct(gateMin - WUYIN_GATE_LEAD_MIN)
+  const listenEndPct = onsetPct
   const nowPct = toPct(nowMin)
 
   const phaseLabel =
@@ -67,6 +71,16 @@ export function CircadianRiverStrip({ plan, watchRows = [] }: Props) {
             boxShadow: `0 0 14px ${TANG.earth}66`,
           }}
         />
+        {listeningWindow && listeningWindow.tier !== 'closed' && (
+          <div
+            className="dojo-river-wuyin-band absolute inset-y-0 rounded-full"
+            style={{
+              left: `${listenStartPct}%`,
+              width: `${Math.max(listenEndPct - listenStartPct, 2)}%`,
+            }}
+            title={`五音聆听 ${listeningWindow.windowStart}–${listeningWindow.windowEnd}`}
+          />
+        )}
         <div
           className="dojo-river-now absolute top-1/2 h-3 w-3 rounded-full border-2 border-[var(--tcm-text)] bg-white"
           style={{ left: `${nowPct}%`, transform: 'translate(-50%, -50%)' }}

@@ -1158,6 +1158,56 @@
   padding: 1px 6px;
 }
 
+/* Phase W1 — 收工聆听窗口 */
+.dojo-listening-window {
+  border: 1px solid rgba(168, 98, 42, 0.22);
+}
+
+.dojo-listening-window--primary {
+  border-color: rgba(168, 98, 42, 0.38);
+  box-shadow: 0 0 20px rgba(168, 98, 42, 0.08);
+}
+
+.dojo-listening-window--done {
+  border-color: rgba(130, 178, 155, 0.35);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.55), rgba(232, 240, 214, 0.45));
+}
+
+.dojo-listening-window__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.dojo-listening-window__btn--hum {
+  border: 1px solid rgba(168, 98, 42, 0.45);
+  background: rgba(168, 98, 42, 0.12);
+  color: var(--tcm-amber);
+}
+
+.dojo-listening-window__btn--listen {
+  border: 1px solid rgba(67, 108, 133, 0.35);
+  background: rgba(67, 108, 133, 0.08);
+  color: var(--tcm-water);
+}
+
+.dojo-listening-window__btn:hover {
+  filter: brightness(1.05);
+}
+
+.dojo-river-wuyin-band {
+  background: rgba(130, 178, 155, 0.45);
+  box-shadow: 0 0 10px rgba(130, 178, 155, 0.35);
+  pointer-events: none;
+  z-index: 1;
+}
+
 .dojo-waveform--ambient span {
   background: var(--tcm-teal-subtle);
 }
