@@ -20,7 +20,7 @@ export function AppLayout() {
         </div>
 
         {/* Page content */}
-        <main className="flex-1 overflow-auto px-4 pb-24 pt-4 lg:px-8 lg:pb-8 lg:pt-0">
+        <main className="app-main-scroll flex-1 overflow-auto px-4 pb-24 pt-4 lg:px-8 lg:pb-8 lg:pt-0">
           <Outlet />
         </main>
       </div>

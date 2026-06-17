@@ -4,6 +4,7 @@ import { callLLMGeneral } from './llm'
 import { isLlmAvailable } from '../config/llm'
 
 import type { WellnessSnapshot } from '../types/wellness'
+import { getLetterPracticeHint, getWuyinPracticeStats } from '../lib/wuyinPracticeStreak'
 
 export interface WeeklyLetterData {
   score: number | null
@@ -280,6 +281,8 @@ function buildFallbackLetter(
   else if (avgSleep > 6) compliments.push('睡眠时长还算稳定')
   if (avgExercise > 15) compliments.push('运动习惯坚持得不错')
   if (weekVoiceLogs.length >= 3) compliments.push('坚持记录饮食真的很棒')
+  const practiceHint = getLetterPracticeHint(getWuyinPracticeStats())
+  if (practiceHint) compliments.push(practiceHint.replace(/。$/, ''))
   if (compliments.length === 0) compliments.push('这周坚持使用 App 关注自己的健康，本身就是很棒的开始')
 
   const compliment = pick(compliments) ?? '这周坚持关注自己的健康，很棒'
@@ -349,7 +352,12 @@ export async function generateWeeklyLetter(
     ? `\n【来信开头必须融入】${wellness.bodyWeather.letterOpener}\n【语气参考】${wellness.mood.gentleNote ?? ''}`
     : ''
 
-  const userPrompt = `${summary}${weatherHint}\n\n请根据以上数据生成本周健康来信。`
+  const practiceHint = getLetterPracticeHint(getWuyinPracticeStats())
+  const practiceHintLine = practiceHint
+    ? `\n【可选表扬】若语气自然，可在信中轻轻提及：${practiceHint}`
+    : ''
+
+  const userPrompt = `${summary}${weatherHint}${practiceHintLine}\n\n请根据以上数据生成本周健康来信。`
 
   try {
     const raw = await callLLMGeneral(SYSTEM_PROMPT, userPrompt, {

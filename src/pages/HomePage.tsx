@@ -3,7 +3,7 @@ import { useAppStore } from '../store/useAppStore'
 import { HomeDashboard } from '../components/home/HomeDashboard'
 import { EnvelopeStage } from '../components/home/EnvelopeStage'
 import { CompactWeatherStrip } from '../components/home/CompactWeatherStrip'
-import { WellnessSection } from '../components/home/WellnessSection'
+import { WellnessDojo } from '../components/home/WellnessDojo'
 import { WeeklyActivitySection } from '../components/home/WeeklyActivitySection'
 import { LetterRevealOverlay } from '../components/health/LetterRevealOverlay'
 import { useWeeklyLetter } from '../hooks/useWeeklyLetter'
@@ -53,7 +53,7 @@ export function HomePage() {
         }
         body={
           <>
-            <WellnessSection
+            <WellnessDojo
               wuyin={wellness?.wuyin}
               circadian={wellness?.circadian}
             />

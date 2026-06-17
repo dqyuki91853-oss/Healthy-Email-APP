@@ -42,10 +42,10 @@ const v3Styles = `
   overflow: hidden;
 }
 
-/* Full-width top hero row — EnvelopeStage lives here */
+/* Full-width top hero row — compressed for Dojo layout (Scheme B) */
 .row-hero {
   flex: 0 0 auto;
-  min-height: min(300px, 38vh);
+  min-height: min(220px, 24vh);
 }
 
 /* Bottom body row — 55/45 grid: 五音+作息 expanded, 本周活动 compact */
@@ -53,13 +53,20 @@ const v3Styles = `
   flex: 1 1 0;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(320px, 55fr) minmax(260px, 45fr);
+  grid-template-columns: minmax(340px, 58fr) minmax(240px, 42fr);
   gap: 16px;
 }
 
 .row-body > * {
   min-height: 0;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.row-body > *::-webkit-scrollbar {
+  display: none;
+  width: 0;
 }
 
 @media (max-width: 1023px) {

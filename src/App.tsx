@@ -15,6 +15,7 @@ import { MentalPage } from './pages/MentalPage'
 import { WomenPage } from './pages/WomenPage'
 import { AlertsPage } from './pages/AlertsPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { WuyinPracticePage } from './pages/WuyinPracticePage'
 
 export default function App() {
   const loadData = useAppStore((s) => s.loadData)
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="women" element={<WomenPage />} />
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="practice/wuyin" element={<WuyinPracticePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

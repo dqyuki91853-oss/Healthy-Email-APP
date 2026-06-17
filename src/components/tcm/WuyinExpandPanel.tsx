@@ -5,6 +5,7 @@ interface Props {
   moodLabel?: string
   contextLine?: string
   moodMetaphors?: string[]
+  theme?: 'default' | 'dojo'
 }
 
 /** Step-by-step instruction for hum pattern */
@@ -30,34 +31,39 @@ const FIVE_ELEMENT: Record<string, { element: string; meaning: string }> = {
   yu: { element: '水', meaning: '恐、惊 → 羽音沉静收藏' },
 }
 
-export function WuyinExpandPanel({ prescription, moodLabel, contextLine, moodMetaphors }: Props) {
+export function WuyinExpandPanel({ prescription, moodLabel, contextLine, moodMetaphors, theme = 'default' }: Props) {
   const fe = FIVE_ELEMENT[prescription.toneId] ?? { element: '—', meaning: '' }
+  const isDojo = theme === 'dojo'
+  const muted = isDojo ? 'text-[var(--tcm-muted)]' : 'text-[var(--color-muted)]'
+  const text = isDojo ? 'text-[var(--tcm-text)]' : ''
+  const border = isDojo ? 'border-[var(--tcm-border)]' : 'border-[var(--color-border)]'
+  const badge = isDojo ? 'bg-[var(--tcm-surface-2)] text-[var(--tcm-muted)]' : 'bg-[var(--color-surface-2)] text-[var(--color-muted)]'
 
   return (
-    <div className="mt-4 space-y-4 border-t border-[var(--color-border)] pt-4">
+    <div className={`space-y-4 ${isDojo ? '' : 'mt-4 border-t pt-4'} ${border}`}>
       {/* Why this tone */}
       {contextLine && (
         <div>
-          <p className="text-xs font-medium text-[var(--color-muted)]">为什么推荐这音</p>
-          <p className="mt-1 text-sm">{contextLine}</p>
+          <p className={`text-xs font-medium ${muted}`}>为什么推荐这音</p>
+          <p className={`mt-1 text-sm ${text}`}>{contextLine}</p>
         </div>
       )}
 
       {/* Mood label (white-listed, no medical terms) */}
       {moodLabel && (
         <div>
-          <p className="text-xs font-medium text-[var(--color-muted)]">情绪感知</p>
-          <p className="mt-1 text-sm">今天身体呈现：{moodLabel}</p>
+          <p className={`text-xs font-medium ${muted}`}>情绪感知</p>
+          <p className={`mt-1 text-sm ${text}`}>今天身体呈现：{moodLabel}</p>
         </div>
       )}
 
       {/* Mood inference metaphors */}
       {moodMetaphors && moodMetaphors.length > 0 && (
         <div>
-          <p className="text-xs font-medium text-[var(--color-muted)]">今天怎么推断的</p>
+          <p className={`text-xs font-medium ${muted}`}>今天怎么推断的</p>
           <ul className="mt-1 space-y-0.5">
             {moodMetaphors.map((m, i) => (
-              <li key={i} className="text-sm text-[var(--color-muted)]">{m}</li>
+              <li key={i} className={`text-sm ${muted}`}>{m}</li>
             ))}
           </ul>
         </div>
@@ -65,25 +71,25 @@ export function WuyinExpandPanel({ prescription, moodLabel, contextLine, moodMet
 
       {/* Five element context */}
       <div>
-        <p className="text-xs font-medium text-[var(--color-muted)]">五行参考</p>
+        <p className={`text-xs font-medium ${muted}`}>五行参考</p>
         <div className="mt-1 flex items-center gap-2">
-          <span className="rounded-[var(--radius-pill)] bg-[var(--color-surface-2)] px-2 py-0.5 text-xs text-[var(--color-muted)]">{fe.element}</span>
-          <span className="text-sm text-[var(--color-muted)]">{fe.meaning}</span>
+          <span className={`rounded-[var(--radius-pill)] px-2 py-0.5 text-xs ${badge}`}>{fe.element}</span>
+          <span className={`text-sm ${muted}`}>{fe.meaning}</span>
         </div>
       </div>
 
       {/* Step-by-step */}
       <div>
-        <p className="text-xs font-medium text-[var(--color-muted)]">练习步骤</p>
+        <p className={`text-xs font-medium ${muted}`}>练习步骤</p>
         <ul className="mt-1 space-y-1">
           {humSteps(prescription.humPattern).map((step) => (
-            <li key={step} className="text-sm text-[var(--color-muted)]">{step}</li>
+            <li key={step} className={`text-sm ${muted}`}>{step}</li>
           ))}
         </ul>
       </div>
 
       {/* Disclaimer */}
-      <p className="text-[10px] text-[var(--color-muted)] leading-relaxed">
+      <p className={`text-[10px] leading-relaxed ${muted}`}>
         {prescription.disclaimer}
         {' · '}
         五音为传统文化参考，练习为哼唱+慢呼吸放松，非医疗谐振治疗。

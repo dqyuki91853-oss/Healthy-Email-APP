@@ -63,7 +63,29 @@ export async function playToneForDuration(
   return playReferenceTone(frequencyHz, durationSec * 1000)
 }
 
-// ── Rich Wuyin track playback ──
+/** Phase 3 — 收功轻铃（五度上行） */
+export async function playCompletionChime(): Promise<void> {
+  const ctx = getAudioContext()
+  if (ctx.state === 'suspended') await ctx.resume()
+
+  const now = ctx.currentTime
+  const notes = [392, 523.25]
+  for (let i = 0; i < notes.length; i++) {
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = 'sine'
+    osc.frequency.value = notes[i]
+    const t = now + i * 0.18
+    gain.gain.setValueAtTime(0, t)
+    gain.gain.linearRampToValueAtTime(0.06, t + 0.04)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.55)
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.start(t)
+    osc.stop(t + 0.6)
+  }
+}
+
 
 export interface WuyinTrackParams {
   frequencyHz: number
@@ -127,6 +149,70 @@ export async function playWuyinTrack(
   }
 
   return { stop: cleanup }
+}
+
+/** 环境 + 旋律双轨 Mix（Web Audio；mp3 由调用方双 Audio 处理） */
+export async function playWuyinMix(
+  ambient: WuyinTrackParams,
+  melody: WuyinTrackParams,
+  mixRatio: number,
+): Promise<ToneSessionHandle & { setMix: (ratio: number) => void }> {
+  const ctx = getAudioContext()
+  if (ctx.state === 'suspended') await ctx.resume()
+
+  const now = ctx.currentTime
+  const duration = Math.min(ambient.durationSec, melody.durationSec)
+  const clampMix = (m: number) => Math.max(0, Math.min(1, m))
+  let mix = clampMix(mixRatio)
+
+  const masterGain = ctx.createGain()
+  masterGain.connect(ctx.destination)
+
+  const ambientBus = ctx.createGain()
+  const melodyBus = ctx.createGain()
+  ambientBus.connect(masterGain)
+  melodyBus.connect(masterGain)
+
+  const applyMix = (m: number) => {
+    const vol = 0.09
+    ambientBus.gain.setValueAtTime((1 - m) * vol, ctx.currentTime)
+    melodyBus.gain.setValueAtTime(m * vol, ctx.currentTime)
+  }
+  applyMix(mix)
+
+  const attack = Math.min(2.5, duration * 0.12)
+  const release = Math.min(3.5, duration * 0.25)
+  masterGain.gain.setValueAtTime(0, now)
+  masterGain.gain.linearRampToValueAtTime(1, now + attack)
+  masterGain.gain.setValueAtTime(1, now + duration - release)
+  masterGain.gain.linearRampToValueAtTime(0, now + duration)
+
+  const allOscillators: OscillatorNode[] = []
+  const allBuffers: AudioBufferSourceNode[] = []
+
+  buildAmbient(ctx, ambientBus, ambient.frequencyHz, duration, allOscillators)
+  buildMelody(ctx, melodyBus, melody.frequencyHz, duration, allOscillators)
+
+  const cleanup = () => {
+    try {
+      masterGain.gain.cancelScheduledValues(ctx.currentTime)
+      masterGain.gain.setValueAtTime(0, ctx.currentTime)
+    } catch { /* ignore */ }
+    for (const osc of allOscillators) {
+      try { osc.stop() } catch { /* already stopped */ }
+    }
+    for (const buf of allBuffers) {
+      try { buf.stop() } catch { /* already stopped */ }
+    }
+  }
+
+  return {
+    stop: cleanup,
+    setMix: (m: number) => {
+      mix = clampMix(m)
+      applyMix(mix)
+    },
+  }
 }
 
 // ── Soundscape builders ──
