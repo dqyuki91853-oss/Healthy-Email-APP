@@ -11,10 +11,11 @@ interface Props {
   plan: PersonalCircadianPlan
   watchRows?: DailyWatchRow[]
   listeningWindow?: WuyinListeningWindow | null
+  gateLeadMin?: number
 }
 
 /** 时间长河 + Watch 睡眠相位（Phase 2C） */
-export function CircadianRiverStrip({ plan, watchRows = [], listeningWindow }: Props) {
+export function CircadianRiverStrip({ plan, watchRows = [], listeningWindow, gateLeadMin = WUYIN_GATE_LEAD_MIN }: Props) {
   const [expanded, setExpanded] = useState(false)
   const now = new Date()
   const nowMin = now.getHours() * 60 + now.getMinutes()
@@ -31,7 +32,7 @@ export function CircadianRiverStrip({ plan, watchRows = [], listeningWindow }: P
   }
   const gatePct = toPct(gateMin)
   const onsetPct = toPct(onsetMin)
-  const listenStartPct = toPct(gateMin - WUYIN_GATE_LEAD_MIN)
+  const listenStartPct = toPct(gateMin - gateLeadMin)
   const listenEndPct = onsetPct
   const nowPct = toPct(nowMin)
 

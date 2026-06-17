@@ -6,8 +6,10 @@ import type {
   WuyinToneId,
 } from '../types/tcm'
 
-/** 收工窗口提前量（分钟）— 产品确认 */
-export const WUYIN_GATE_LEAD_MIN = 15
+import { WUYIN_GATE_LEAD_DEFAULT_MIN } from '../lib/wuyinListeningPrefs'
+
+/** @deprecated 使用 prefs.gateLeadMin；保留作默认常量 */
+export const WUYIN_GATE_LEAD_MIN = WUYIN_GATE_LEAD_DEFAULT_MIN
 
 /** 收工前试听暖场区间（分钟） */
 export const WUYIN_WARMUP_BEFORE_GATE_MIN = 90
@@ -48,15 +50,16 @@ function activeSecondaryMeridian(hour: number) {
 export function computeWuyinListeningWindow(
   circadian: PersonalCircadianPlan,
   wuyin: WuyinPrescription | null,
-  options?: { now?: Date; practicedToday?: boolean },
+  options?: { now?: Date; practicedToday?: boolean; gateLeadMin?: number },
 ): WuyinListeningWindow | null {
   if (!wuyin) return null
 
+  const gateLeadMin = options?.gateLeadMin ?? WUYIN_GATE_LEAD_MIN
   const now = options?.now ?? new Date()
   const nowMin = now.getHours() * 60 + now.getMinutes()
   const gateMin = parseTimeToMinutes(circadian.personalSleepGate)
   const onsetMin = parseTimeToMinutes(circadian.personalSleepOnset)
-  const windowStartMin = gateMin - WUYIN_GATE_LEAD_MIN
+  const windowStartMin = gateMin - gateLeadMin
   const windowEndMin = onsetMin
 
   const windowStart = minutesToTime(windowStartMin)

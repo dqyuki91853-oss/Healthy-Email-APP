@@ -14,6 +14,11 @@ import { Sparkles, CheckCircle, Trash2, Upload, Download } from 'lucide-react'
 import { buildSubhealthExport, parseSubhealthExport } from '../lib/dataSync'
 import { getAllHistoryPatterns } from '../services/dietHistory'
 import { isTauri } from '../lib/platform'
+import {
+  getWuyinListeningPrefs,
+  saveWuyinListeningPrefs,
+  WUYIN_GATE_LEAD_DEFAULT_MIN,
+} from '../lib/wuyinListeningPrefs'
 
 const STREAMING_THRESHOLD = 50 * 1024 * 1024
 
@@ -42,6 +47,9 @@ export function SettingsPage() {
   const [llmKey, setLlmKey] = useState('')
   const [askedToday, setAskedToday] = useState(0)
   const [saved, setSaved] = useState(false)
+  const [wuyinReminderEnabled, setWuyinReminderEnabled] = useState(true)
+  const [wuyinGateLeadMin, setWuyinGateLeadMin] = useState(WUYIN_GATE_LEAD_DEFAULT_MIN)
+  const [wuyinPrefsSaved, setWuyinPrefsSaved] = useState(false)
 
   useEffect(() => {
     getFollowUpSettings().then((s) => {
@@ -54,7 +62,18 @@ export function SettingsPage() {
       setLlmKey(s.llmApiKey ?? '')
       setAskedToday(s.followUpAskedToday)
     })
+    const wuyinPrefs = getWuyinListeningPrefs()
+    setWuyinReminderEnabled(wuyinPrefs.enabled)
+    setWuyinGateLeadMin(wuyinPrefs.gateLeadMin)
   }, [])
+
+  const saveWuyinPrefs = (patch: Parameters<typeof saveWuyinListeningPrefs>[0]) => {
+    const next = saveWuyinListeningPrefs(patch)
+    setWuyinReminderEnabled(next.enabled)
+    setWuyinGateLeadMin(next.gateLeadMin)
+    setWuyinPrefsSaved(true)
+    window.setTimeout(() => setWuyinPrefsSaved(false), 2000)
+  }
 
   const exportJson = async () => {
     const data = buildSubhealthExport({
@@ -239,6 +258,47 @@ export function SettingsPage() {
             保存设置
           </Button>
         </div>
+      </Card>
+
+      <Card>
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="font-medium">五音收工提醒</h3>
+          {wuyinPrefsSaved && (
+            <span className="flex items-center gap-1 text-xs text-[var(--color-green)]">
+              <CheckCircle size={12} /> 已保存
+            </span>
+          )}
+        </div>
+        <p className="mb-3 text-xs text-[var(--color-muted)]">
+          首页道场显示「收工聆听窗口」提示，结合个人作息与五音处方。App 打包后将支持系统本地通知。
+        </p>
+        <label className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium">启用收工五音提醒</p>
+            <p className="text-xs text-[var(--color-muted)]">关闭后不再显示聆听窗口条（已完成练习仍会提示）</p>
+          </div>
+          <input
+            type="checkbox"
+            className="h-5 w-5 shrink-0 rounded accent-[var(--color-teal)]"
+            checked={wuyinReminderEnabled}
+            onChange={(e) => saveWuyinPrefs({ enabled: e.target.checked })}
+          />
+        </label>
+        <label className="mt-4 block text-sm">
+          窗口提前量（分钟）
+          <input
+            type="number"
+            min={0}
+            max={60}
+            value={wuyinGateLeadMin}
+            onChange={(e) => setWuyinGateLeadMin(parseInt(e.target.value, 10) || 0)}
+            onBlur={() => saveWuyinPrefs({ gateLeadMin: wuyinGateLeadMin })}
+            className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-bg)] p-2"
+          />
+          <span className="mt-1 block text-[11px] text-[var(--color-muted)]">
+            在 personalSleepGate 之前多少分钟开始高亮聆听窗口（默认 {WUYIN_GATE_LEAD_DEFAULT_MIN} 分钟）
+          </span>
+        </label>
       </Card>
 
       <Card>

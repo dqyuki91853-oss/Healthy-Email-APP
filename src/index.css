@@ -1201,6 +1201,11 @@
   filter: brightness(1.05);
 }
 
+.dojo-listening-window__dismiss {
+  border-top: 1px dashed rgba(168, 98, 42, 0.15);
+  padding-top: 8px;
+}
+
 .dojo-river-wuyin-band {
   background: rgba(130, 178, 155, 0.45);
   box-shadow: 0 0 10px rgba(130, 178, 155, 0.35);

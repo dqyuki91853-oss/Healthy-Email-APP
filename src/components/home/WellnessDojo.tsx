@@ -8,6 +8,7 @@ import { getPracticeEntryHint } from '../../lib/wuyinPracticeStreak'
 import { hapticPulse } from '../../lib/haptic'
 import { useWuyinPracticeStats } from '../../hooks/useWuyinPracticeStats'
 import { useWuyinListeningWindow } from '../../hooks/useWuyinListeningWindow'
+import { useWuyinListeningPrefs } from '../../hooks/useWuyinListeningPrefs'
 import { useAppStore } from '../../store/useAppStore'
 import { WuyinToneWheel } from '../tcm/dojo/WuyinToneWheel'
 import { MoodBubbleBar } from '../tcm/dojo/MoodBubbleBar'
@@ -64,6 +65,7 @@ export function WellnessDojo({ wuyin, circadian }: Props) {
   }, [wuyin, selectedMood])
 
   const listeningWindow = useWuyinListeningWindow(circadian, displayPrescription)
+  const listeningPrefs = useWuyinListeningPrefs()
 
   const contextLine = useMemo(() => {
     if (!displayPrescription) return ''
@@ -178,6 +180,7 @@ export function WellnessDojo({ wuyin, circadian }: Props) {
               plan={circadian}
               watchRows={watchRows}
               listeningWindow={listeningWindow}
+              gateLeadMin={listeningPrefs.gateLeadMin}
             />
           </div>
         )}

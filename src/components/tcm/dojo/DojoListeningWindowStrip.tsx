@@ -2,6 +2,11 @@ import { useNavigate } from 'react-router-dom'
 import { Check, ChevronRight, Headphones, Wind } from 'lucide-react'
 import type { WuyinListeningWindow, WuyinPrescription } from '../../../types/tcm'
 import { WUYIN_TONES } from '../../../config/wuyinToneMap'
+import {
+  dismissListeningReminderForToday,
+  snoozeListeningReminder,
+  WUYIN_SNOOZE_MINUTES,
+} from '../../../lib/wuyinListeningPrefs'
 
 interface Props {
   window: WuyinListeningWindow
@@ -17,7 +22,7 @@ function formatCountdown(minutes: number): string {
   return `${minutes} 分`
 }
 
-/** Phase W1 — 收工聆听窗口条 */
+/** Phase W1/W2 — 收工聆听窗口条 */
 export function DojoListeningWindowStrip({ window: win, prescription, onListen }: Props) {
   const navigate = useNavigate()
   const tone = WUYIN_TONES[prescription.toneId]
@@ -98,6 +103,23 @@ export function DojoListeningWindowStrip({ window: win, prescription, onListen }
             <ChevronRight size={12} />
           </button>
         )}
+      </div>
+
+      <div className="dojo-listening-window__dismiss mt-2 flex flex-wrap gap-3">
+        <button
+          type="button"
+          className="text-[10px] text-[var(--tcm-muted)] hover:text-[var(--tcm-text)]"
+          onClick={() => snoozeListeningReminder(WUYIN_SNOOZE_MINUTES)}
+        >
+          稍后提醒（{WUYIN_SNOOZE_MINUTES} 分钟）
+        </button>
+        <button
+          type="button"
+          className="text-[10px] text-[var(--tcm-muted)] hover:text-[var(--tcm-text)]"
+          onClick={() => dismissListeningReminderForToday()}
+        >
+          今日不再提醒
+        </button>
       </div>
     </div>
   )

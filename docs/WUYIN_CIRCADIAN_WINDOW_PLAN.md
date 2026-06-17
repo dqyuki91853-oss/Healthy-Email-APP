@@ -2,7 +2,7 @@
 
 > **版本**：v1 · 2026-06-11  
 > **前置**：Phase 1–6 数字道场 Web 预览（tag `v4-dojo-web`）  
-> **状态**：Phase W1 已完成（Web）；Phase W2 待实施
+> **状态**：Phase W1–W2 已完成（Web）；Phase W3 待 App 打包
 
 ---
 
@@ -81,8 +81,8 @@ interface WuyinListeningWindow {
 
 ### Phase W2 — 设置（1–2h）
 
-- [ ] Settings：启用收工五音提醒、gate 偏移（默认 15min）
-- [ ] localStorage dismiss / snooze
+- [x] Settings：启用收工五音提醒、gate 偏移（默认 15min）
+- [x] localStorage dismiss / snooze（30min 稍后 / 今日不再提醒）
 
 ### Phase W3 — App 本地通知（打包时）
 

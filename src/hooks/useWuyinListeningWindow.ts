@@ -2,11 +2,17 @@ import { useEffect, useMemo, useState } from 'react'
 import type { PersonalCircadianPlan, WuyinListeningWindow, WuyinPrescription } from '../types/tcm'
 import { computeWuyinListeningWindow } from '../engine/wuyinListeningWindow'
 import { practicedWuyinToday, WUYIN_PRACTICE_UPDATE_EVENT } from '../lib/wuyinPracticeStreak'
+import {
+  isListeningReminderSuppressed,
+  normalizeListeningPrefsForToday,
+} from '../lib/wuyinListeningPrefs'
+import { useWuyinListeningPrefs } from './useWuyinListeningPrefs'
 
 export function useWuyinListeningWindow(
   circadian: PersonalCircadianPlan | null | undefined,
   wuyin: WuyinPrescription | null | undefined,
 ): WuyinListeningWindow | null {
+  const prefs = useWuyinListeningPrefs()
   const [tick, setTick] = useState(0)
   const [practicedToday, setPracticedToday] = useState(practicedWuyinToday)
 
@@ -21,15 +27,25 @@ export function useWuyinListeningWindow(
   }, [])
 
   useEffect(() => {
-    const id = window.setInterval(() => setTick((t) => t + 1), 60_000)
+    normalizeListeningPrefsForToday()
+    const id = window.setInterval(() => {
+      normalizeListeningPrefsForToday()
+      setTick((t) => t + 1)
+    }, 60_000)
     return () => window.clearInterval(id)
   }, [])
 
   return useMemo(() => {
     if (!circadian || !wuyin) return null
-    return computeWuyinListeningWindow(circadian, wuyin, {
+    const win = computeWuyinListeningWindow(circadian, wuyin, {
       now: new Date(),
       practicedToday,
+      gateLeadMin: prefs.gateLeadMin,
     })
-  }, [circadian, wuyin, practicedToday, tick])
+    if (!win) return null
+    if (win.completedInWindow) return win
+    if (!prefs.enabled) return null
+    if (isListeningReminderSuppressed()) return null
+    return win
+  }, [circadian, wuyin, practicedToday, prefs.enabled, prefs.gateLeadMin, tick])
 }
