@@ -1158,28 +1158,22 @@
   padding: 1px 6px;
 }
 
-/* Phase W1 — 收工聆听窗口 */
-/* Phase W1 — 收工聆听 Toast（portal 到 body，自带 token） */
+/* Phase W1 — 收工聆听 Toast（竹简玻璃 · portal 到 body） */
 .dojo-listening-toast {
-  --tcm-amber: #a8622a;
-  --tcm-amber-glow: rgba(168, 98, 42, 0.35);
-  --tcm-text: #1e3a32;
-  --tcm-muted: rgba(30, 58, 50, 0.68);
+  --toast-glass: rgba(255, 255, 255, 0.28);
+  --toast-glass-border: rgba(255, 255, 255, 0.52);
+  --toast-glass-highlight: rgba(255, 255, 255, 0.72);
+  --toast-ink: rgba(30, 58, 50, 0.72);
+  --toast-ink-muted: rgba(30, 58, 50, 0.52);
+  --toast-accent: #2d5244;
   --tcm-font-serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
   position: fixed;
   top: max(12px, env(safe-area-inset-top, 0px));
   right: max(12px, env(safe-area-inset-right, 0px));
   z-index: 9999;
   width: min(calc(100vw - 24px), 320px);
-  animation: dojo-toast-in 0.35s ease-out;
+  animation: dojo-toast-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: auto;
-}
-
-.dojo-listening-toast--active .dojo-listening-toast__inner {
-  border-color: rgba(168, 98, 42, 0.45);
-  box-shadow:
-    0 8px 32px rgba(168, 98, 42, 0.15),
-    0 0 0 1px rgba(255, 255, 255, 0.6) inset;
 }
 
 @media (min-width: 1024px) {
@@ -1192,7 +1186,7 @@
 @keyframes dojo-toast-in {
   from {
     opacity: 0;
-    transform: translate(12px, -8px);
+    transform: translate(10px, -8px);
   }
   to {
     opacity: 1;
@@ -1202,96 +1196,221 @@
 
 .dojo-listening-toast__inner {
   position: relative;
-  border-radius: 16px;
-  border: 1px solid rgba(168, 98, 42, 0.35);
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(232, 240, 214, 0.88));
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--toast-glass-border);
+  background: var(--toast-glass);
+  backdrop-filter: blur(22px) saturate(1.15);
+  -webkit-backdrop-filter: blur(22px) saturate(1.15);
   box-shadow:
-    0 8px 32px rgba(45, 82, 68, 0.14),
-    0 0 0 1px rgba(255, 255, 255, 0.6) inset;
-  padding: 14px 14px 12px;
+    0 8px 32px rgba(45, 82, 68, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.35) inset,
+    inset 0 1px 0 var(--toast-glass-highlight);
+}
+
+.dojo-listening-toast--active .dojo-listening-toast__inner {
+  border-color: rgba(255, 255, 255, 0.62);
+  box-shadow:
+    0 10px 36px rgba(45, 82, 68, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.45) inset,
+    inset 0 1px 0 var(--toast-glass-highlight);
+}
+
+/* 竹简竖纹 — bold 宽片编联 */
+.dojo-listening-toast__slats {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.72;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.06) 0,
+      rgba(255, 255, 255, 0.06) 38px,
+      rgba(45, 82, 68, 0.16) 38px,
+      rgba(45, 82, 68, 0.16) 40px,
+      rgba(45, 82, 68, 0.05) 40px,
+      rgba(45, 82, 68, 0.05) 78px
+    );
+  mask-image: linear-gradient(180deg, black 0%, black 90%, transparent 100%);
+}
+
+.dojo-listening-toast__layout {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 100%;
+}
+
+.dojo-listening-toast__title-col {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  padding: 14px 0 12px;
+  border-right: 1px solid rgba(45, 82, 68, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dojo-listening-toast__title-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: var(--tcm-font-serif);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  color: var(--toast-ink);
+  line-height: 1;
+}
+
+.dojo-listening-toast__content {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 14px 12px 12px;
 }
 
 .dojo-listening-toast__close {
   position: absolute;
   top: 10px;
   right: 10px;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border: none;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.05);
-  color: var(--tcm-muted);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  color: var(--toast-ink-muted);
   cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .dojo-listening-toast__close:hover {
-  background: rgba(168, 98, 42, 0.12);
-  color: var(--tcm-amber);
+  background: rgba(255, 255, 255, 0.42);
+  color: var(--toast-ink);
 }
 
 .dojo-listening-toast__head {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  padding-right: 28px;
+  justify-content: space-between;
+  gap: 8px;
+  padding-right: 24px;
 }
 
-.dojo-listening-toast__title {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  color: var(--tcm-amber);
+.dojo-listening-toast__eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--toast-ink-muted);
+  font-family: var(--tcm-font-serif);
+}
+
+.dojo-listening-toast__ring-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+}
+
+.dojo-listening-toast__ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.dojo-listening-toast__ring-track {
+  fill: none;
+  stroke: rgba(45, 82, 68, 0.12);
+  stroke-width: 2;
+}
+
+.dojo-listening-toast__ring-fill {
+  fill: none;
+  stroke: var(--toast-accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease;
+  opacity: 0.75;
+}
+
+.dojo-listening-toast__ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--toast-accent);
   font-family: var(--tcm-font-serif);
 }
 
 .dojo-listening-toast__time {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
   font-size: 10px;
-  color: var(--tcm-muted);
+  color: var(--toast-ink-muted);
+  letter-spacing: 0.04em;
+}
+
+.dojo-listening-toast__meta {
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(45, 82, 68, 0.1);
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 9px;
+  letter-spacing: 0.04em;
 }
 
 .dojo-listening-toast__body {
   margin-top: 8px;
   font-size: 12px;
-  line-height: 1.55;
-  color: var(--tcm-text);
+  line-height: 1.58;
+  color: var(--toast-ink);
 }
 
 .dojo-listening-toast__countdown {
   margin-top: 6px;
   font-size: 10px;
-  color: var(--tcm-muted);
+  color: var(--toast-ink-muted);
+  font-family: var(--tcm-font-serif);
+  letter-spacing: 0.04em;
 }
 
 .dojo-listening-toast__countdown--live {
-  color: var(--tcm-amber);
+  color: var(--toast-accent);
 }
 
 .dojo-listening-toast__cta {
-  margin-top: 10px;
+  margin-top: 12px;
   width: 100%;
-  border: 1px solid rgba(168, 98, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 999px;
-  padding: 8px 14px;
-  background: rgba(168, 98, 42, 0.12);
+  padding: 9px 14px;
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(8px);
   font-size: 12px;
-  letter-spacing: 0.06em;
-  color: var(--tcm-amber);
+  letter-spacing: 0.08em;
+  font-family: var(--tcm-font-serif);
+  color: var(--toast-accent);
   cursor: pointer;
   transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .dojo-listening-toast__cta:hover {
-  background: rgba(168, 98, 42, 0.2);
-  box-shadow: 0 0 12px var(--tcm-amber-glow);
+  background: rgba(255, 255, 255, 0.42);
+  box-shadow: 0 2px 12px rgba(45, 82, 68, 0.1);
 }
 
 .dojo-listening-toast__footer {
-  margin-top: 8px;
+  margin-top: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1303,12 +1422,13 @@
   border: none;
   background: none;
   padding: 0;
-  color: var(--tcm-muted);
+  color: var(--toast-ink-muted);
   cursor: pointer;
+  transition: color 0.2s ease;
 }
 
 .dojo-listening-toast__footer button:hover {
-  color: var(--tcm-text);
+  color: var(--toast-ink);
   text-decoration: underline;
 }
 
