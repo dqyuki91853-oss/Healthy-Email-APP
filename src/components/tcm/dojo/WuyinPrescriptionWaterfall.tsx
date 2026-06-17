@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { WuyinAudioTrack } from '../../../lib/wuyinAudioLibrary'
-import { playWuyinMix, playWuyinTrack } from '../../../services/audioTone'
-import { TaijiPlayKnob } from './TaijiPlayKnob'
+import { playWuyinTrack } from '../../../services/audioTone'
+import { DojoPlayButton } from './DojoPlayButton'
 
 interface Props {
   tracks: WuyinAudioTrack[]
@@ -19,14 +19,18 @@ const categoryMeta: Record<
 }
 
 function formatTime(sec: number): string {
-  const m = Math.floor(sec / 60)
-  const s = Math.floor(sec % 60)
+  const clamped = Math.max(0, sec)
+  const m = Math.floor(clamped / 60)
+  const s = Math.floor(clamped % 60)
   return `${m}:${s.toString().padStart(2, '0')}`
 }
 
-function WaveformBars({ playing }: { playing: boolean }) {
+function WaveformBars({ playing, variant }: { playing: boolean; variant: WuyinAudioTrack['category'] }) {
   return (
-    <div className={`dojo-waveform ${playing ? 'dojo-waveform--live' : ''}`} aria-hidden>
+    <div
+      className={`dojo-waveform dojo-waveform--${variant} ${playing ? 'dojo-waveform--live' : ''}`}
+      aria-hidden
+    >
       {Array.from({ length: 12 }, (_, i) => (
         <span key={i} style={{ animationDelay: `${i * 0.08}s` }} />
       ))}
@@ -34,35 +38,37 @@ function WaveformBars({ playing }: { playing: boolean }) {
   )
 }
 
-type PlayMode = 'mix' | 'nature' | null
+interface PlaybackSnapshot {
+  trackId: string
+  elapsedSec: number
+  durationSec: number
+}
 
 export function WuyinPrescriptionWaterfall({ tracks, activeTrackId, onSelect }: Props) {
-  const [playMode, setPlayMode] = useState<PlayMode>(null)
-  const [mix, setMix] = useState(0.5)
-  const [progress, setProgress] = useState(0)
+  const [soloTrackId, setSoloTrackId] = useState<string | null>(null)
+  const [playback, setPlayback] = useState<PlaybackSnapshot | null>(null)
   const stopRef = useRef<(() => void) | null>(null)
-  const setMixRef = useRef<((m: number) => void) | null>(null)
   const audioRefs = useRef<HTMLAudioElement[]>([])
   const tickRef = useRef<number | null>(null)
+  const startTimeRef = useRef(0)
 
-  const ambient = tracks.find((t) => t.category === 'ambient')
-  const melody = tracks.find((t) => t.category === 'melody')
-  const nature = tracks.find((t) => t.category === 'nature')
+  const clearTick = useCallback(() => {
+    if (tickRef.current) window.clearInterval(tickRef.current)
+    tickRef.current = null
+  }, [])
 
   const stopAll = useCallback(() => {
     stopRef.current?.()
     stopRef.current = null
-    setMixRef.current = null
     for (const a of audioRefs.current) {
       a.pause()
       a.removeAttribute('src')
     }
     audioRefs.current = []
-    if (tickRef.current) window.clearInterval(tickRef.current)
-    tickRef.current = null
-    setProgress(0)
-    setPlayMode(null)
-  }, [])
+    clearTick()
+    setPlayback(null)
+    setSoloTrackId(null)
+  }, [clearTick])
 
   useEffect(() => () => stopAll(), [stopAll])
 
@@ -71,110 +77,77 @@ export function WuyinPrescriptionWaterfall({ tracks, activeTrackId, onSelect }: 
     stopAll()
   }, [tracksKey, stopAll])
 
-  useEffect(() => {
-    setMixRef.current?.(mix)
-    for (const a of audioRefs.current) {
-      if (audioRefs.current.length === 2) {
-        a.volume = (a.dataset.layer === 'ambient' ? 1 - mix : mix) * 0.85
+  const beginTick = useCallback(
+    (durationSec: number, trackId: string) => {
+      startTimeRef.current = Date.now()
+      setSoloTrackId(trackId)
+      setPlayback({ trackId, elapsedSec: 0, durationSec })
+
+      clearTick()
+      tickRef.current = window.setInterval(() => {
+        const elapsed = (Date.now() - startTimeRef.current) / 1000
+        if (elapsed >= durationSec) {
+          stopAll()
+        } else {
+          setPlayback({ trackId, elapsedSec: elapsed, durationSec })
+        }
+      }, 200)
+    },
+    [clearTick, stopAll],
+  )
+
+  const fadeInVolume = useCallback(async (elements: HTMLAudioElement[], targetVolume: number) => {
+    const steps = 10
+    for (let i = 1; i <= steps; i++) {
+      await new Promise((r) => window.setTimeout(r, 30))
+      for (const el of elements) {
+        el.volume = (targetVolume * i) / steps
       }
     }
-  }, [mix])
+  }, [])
 
-  const startMix = useCallback(async () => {
-    if (!ambient || !melody) return
-    stopAll()
-    onSelect(melody)
-    setPlayMode('mix')
-
-    const duration = Math.min(ambient.durationSec, melody.durationSec)
-
-    if (ambient.src && melody.src) {
-      const a1 = new Audio(ambient.src)
-      const a2 = new Audio(melody.src)
-      a1.dataset.layer = 'ambient'
-      a2.dataset.layer = 'melody'
-      a1.volume = 0
-      a2.volume = 0
-      audioRefs.current = [a1, a2]
-      const onEnd = () => stopAll()
-      a1.addEventListener('ended', onEnd)
-      a2.addEventListener('ended', onEnd)
-      await Promise.all([a1.play(), a2.play()])
-      // Phase 2A：crossfade 淡入
-      const targetA = (1 - mix) * 0.85
-      const targetM = mix * 0.85
-      const steps = 12
-      for (let i = 1; i <= steps; i++) {
-        await new Promise((r) => window.setTimeout(r, 25))
-        a1.volume = (targetA * i) / steps
-        a2.volume = (targetM * i) / steps
-      }
-      stopRef.current = () => {
-        a1.removeEventListener('ended', onEnd)
-        a2.removeEventListener('ended', onEnd)
-        a1.pause()
-        a2.pause()
-      }
-    } else {
-      const handle = await playWuyinMix(
-        { frequencyHz: ambient.frequencyHz, durationSec: duration, category: 'ambient' },
-        { frequencyHz: melody.frequencyHz, durationSec: duration, category: 'melody' },
-        mix,
-      )
-      stopRef.current = handle.stop
-      setMixRef.current = handle.setMix
-    }
-
-    const start = Date.now()
-    tickRef.current = window.setInterval(() => {
-      const e = (Date.now() - start) / 1000
-      if (e >= duration) {
-        stopAll()
-      } else {
-        setProgress(e / duration)
-      }
-    }, 200)
-  }, [ambient, melody, mix, onSelect, stopAll])
-
-  const startNature = useCallback(async () => {
-    if (!nature) return
-    stopAll()
-    onSelect(nature)
-    setPlayMode('nature')
-
-    if (nature.src) {
-      const audio = new Audio(nature.src)
+  const playMp3Solo = useCallback(
+    async (track: WuyinAudioTrack) => {
+      if (!track.src) return false
+      const audio = new Audio(track.src)
       audio.volume = 0
       audioRefs.current = [audio]
       const onEnd = () => stopAll()
       audio.addEventListener('ended', onEnd)
-      audio.addEventListener('timeupdate', () => {
-        if (audio.duration) setProgress(audio.currentTime / audio.duration)
-      })
       await audio.play()
-      for (let i = 1; i <= 10; i++) {
-        await new Promise((r) => window.setTimeout(r, 30))
-        audio.volume = (0.85 * i) / 10
-      }
+      await fadeInVolume([audio], 0.85)
       stopRef.current = () => {
         audio.removeEventListener('ended', onEnd)
         audio.pause()
       }
-    } else {
-      const handle = await playWuyinTrack({
-        frequencyHz: nature.frequencyHz,
-        durationSec: nature.durationSec,
-        category: 'nature',
-      })
-      stopRef.current = handle.stop
-      const start = Date.now()
-      tickRef.current = window.setInterval(() => {
-        const e = (Date.now() - start) / 1000
-        if (e >= nature.durationSec) stopAll()
-        else setProgress(e / nature.durationSec)
-      }, 200)
-    }
-  }, [nature, onSelect, stopAll])
+      beginTick(track.durationSec, track.id)
+      return true
+    },
+    [beginTick, fadeInVolume, stopAll],
+  )
+
+  const startSolo = useCallback(
+    async (track: WuyinAudioTrack) => {
+      if (soloTrackId === track.id) {
+        stopAll()
+        return
+      }
+      stopAll()
+      onSelect(track)
+
+      const played = track.src ? await playMp3Solo(track) : false
+      if (!played) {
+        const handle = await playWuyinTrack({
+          frequencyHz: track.frequencyHz,
+          durationSec: track.durationSec,
+          category: track.category,
+        })
+        stopRef.current = handle.stop
+        beginTick(track.durationSec, track.id)
+      }
+    },
+    [beginTick, onSelect, playMp3Solo, soloTrackId, stopAll],
+  )
 
   if (tracks.length === 0) {
     return <p className="py-6 text-center text-xs text-[var(--tcm-muted)]">暂无可选音轨</p>
@@ -183,6 +156,16 @@ export function WuyinPrescriptionWaterfall({ tracks, activeTrackId, onSelect }: 
   const ordered = (['ambient', 'melody', 'nature'] as const)
     .map((cat) => tracks.find((t) => t.category === cat))
     .filter(Boolean) as WuyinAudioTrack[]
+
+  const isTrackPlaying = (track: WuyinAudioTrack): boolean =>
+    playback?.trackId === track.id
+
+  const displayTime = (track: WuyinAudioTrack): string => {
+    if (!isTrackPlaying(track) || !playback) {
+      return formatTime(track.durationSec)
+    }
+    return formatTime(playback.durationSec - playback.elapsedSec)
+  }
 
   return (
     <div className="space-y-3">
@@ -195,16 +178,13 @@ export function WuyinPrescriptionWaterfall({ tracks, activeTrackId, onSelect }: 
       {ordered.map((track) => {
         const meta = categoryMeta[track.category]
         const isActive = track.id === activeTrackId
-        const isMixPlaying = playMode === 'mix' && (track.category === 'ambient' || track.category === 'melody')
-        const isNaturePlaying = playMode === 'nature' && track.category === 'nature'
-        const isPlaying = isMixPlaying || isNaturePlaying
-
-        const showMixKnob = track.category === 'melody' && ambient && melody
+        const isPlaying = isTrackPlaying(track)
+        const isSoloPlaying = soloTrackId === track.id
 
         return (
           <div
             key={track.id}
-            className={`dojo-track tcm-paper tcm-noise tcm-ink-border ${meta.cardClass} ${isActive ? 'dojo-track--active' : ''} ${isPlaying ? 'dojo-track--playing dojo-track--crossfade-in' : playMode ? 'dojo-track--idle-fade' : ''}`}
+            className={`dojo-track tcm-paper tcm-noise tcm-ink-border ${meta.cardClass} ${isActive ? 'dojo-track--active' : ''} ${isPlaying ? 'dojo-track--playing dojo-track--crossfade-in' : soloTrackId ? 'dojo-track--idle-fade' : ''}`}
           >
             <div className="flex items-start gap-3">
               <div className="min-w-0 flex-1">
@@ -221,33 +201,17 @@ export function WuyinPrescriptionWaterfall({ tracks, activeTrackId, onSelect }: 
                 <p className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-[var(--tcm-muted)]">
                   {track.description}
                 </p>
-                {track.category === 'melody' && <WaveformBars playing={isPlaying} />}
-                {track.category === 'nature' && (
-                  <div className="dojo-liquid-bar mt-2">
-                    <div className="dojo-liquid-bar__fill" style={{ width: `${isNaturePlaying ? progress * 100 : 0}%` }} />
-                  </div>
-                )}
-                <p className="mt-1 text-[10px] text-[var(--tcm-muted)]">{formatTime(track.durationSec)}</p>
+                <WaveformBars playing={isPlaying} variant={track.category} />
+                <p
+                  className={`mt-1 text-[10px] tabular-nums ${isPlaying ? 'text-[var(--tcm-amber)]' : 'text-[var(--tcm-muted)]'}`}
+                >
+                  {isPlaying ? `${displayTime(track)} 剩余` : displayTime(track)}
+                </p>
               </div>
-              {showMixKnob ? (
-                <TaijiPlayKnob
-                  playing={playMode === 'mix'}
-                  mixable
-                  mix={mix}
-                  onMixChange={setMix}
-                  onToggle={() => (playMode === 'mix' ? stopAll() : void startMix())}
-                />
-              ) : track.category === 'nature' ? (
-                <TaijiPlayKnob
-                  playing={isNaturePlaying}
-                  onToggle={() => (isNaturePlaying ? stopAll() : void startNature())}
-                />
-              ) : (
-                <TaijiPlayKnob
-                  playing={isMixPlaying}
-                  onToggle={() => (playMode === 'mix' ? stopAll() : void startMix())}
-                />
-              )}
+              <DojoPlayButton
+                playing={isSoloPlaying}
+                onToggle={() => void startSolo(track)}
+              />
             </div>
           </div>
         )
