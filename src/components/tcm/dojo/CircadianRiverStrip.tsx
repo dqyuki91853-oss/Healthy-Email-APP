@@ -43,11 +43,9 @@ export function CircadianRiverStrip({ plan, watchRows = [], listeningWindow, gat
     plan.phaseLabel === 'late' ? '已过入睡时间' : ''
 
   return (
-    <div className="dojo-circadian tcm-glass rounded-xl p-3">
+    <div className="dojo-circadian">
       <div className="mb-2 flex items-center justify-between gap-2">
-        <p className="text-[10px] tracking-widest text-[var(--tcm-muted)]" style={{ fontFamily: 'var(--tcm-font-serif)' }}>
-          子午流注 · 时间长河
-        </p>
+        <h3 className="dojo-circadian__title">子午流注 · 时间长河</h3>
         {plan.confidence !== 'high' && (
           <span className="dojo-cloud-hint text-[10px] text-[var(--tcm-muted)]" title={plan.personalizationHint}>
             ☁️ 基于默认时辰

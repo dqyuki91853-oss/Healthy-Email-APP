@@ -1,0 +1,949 @@
+{
+  "version": 1,
+  "exportedAt": "2026-06-22T09:23:41.989Z",
+  "source": "build-full-backup.mjs (subhealth-export-2026-06-17.json + subhealth-full-backup-2026-06-22.json)",
+  "voiceLogs": [
+    {
+      "id": "2e06db90-50d0-4651-8031-fca5f7e4d9a7",
+      "timestamp": "2026-06-16T08:36:48.570Z",
+      "recordDate": "2026-06-16",
+      "mealSlot": "lunch",
+      "transcript": "中杯三分糖珍珠奶茶",
+      "foods": [
+        {
+          "name": "珍珠奶茶",
+          "portion": "medium",
+          "confidence": 0.95,
+          "categories": [
+            "sugary_drink",
+            "fructose",
+            "refined_carb"
+          ],
+          "components": [
+            "奶茶",
+            "珍珠"
+          ],
+          "dbMatchHint": "珍珠奶茶",
+          "isComposite": false,
+          "uncertaintyNotes": [
+            "奶茶品牌、甜度与杯量不明"
+          ]
+        }
+      ],
+      "emotions": [],
+      "symptoms": [],
+      "stressScore": null,
+      "brainFogScore": null,
+      "needsFollowUp": false,
+      "followUpQuestions": [],
+      "overallConfidence": 0.7999999999999999,
+      "extractionSource": "llm",
+      "mealSummary": "中杯三分糖珍珠奶茶，约500ml，含糖量较低但仍有添加糖和淀粉珍珠。",
+      "uncertaintySignals": [
+        {
+          "kind": "food_unspecified",
+          "severity": "high",
+          "detail": "奶茶品牌、甜度与杯量不明"
+        },
+        {
+          "kind": "db_ambiguous",
+          "severity": "medium",
+          "detail": "「奶类」品种不明，中国食物成分表候选：全脂/脱脂/酸奶"
+        }
+      ],
+      "extractionDisclaimer": "饮食条目为模式/频率分析用途，营养素为估算值非精确计算；中文复杂饮食的 LLM 抽取尚无成熟开源基准。",
+      "followUpHint": "当前按「午餐」场景优化追问。"
+    },
+    {
+      "id": "cbf268a0-7235-4b4f-be62-2f7bd5f5f5a5",
+      "timestamp": "2026-06-16T07:34:59.055Z",
+      "recordDate": "2026-06-15",
+      "mealSlot": "dinner",
+      "transcript": "猪脚饭",
+      "foods": [
+        {
+          "name": "猪脚饭",
+          "cookingMethod": "红烧",
+          "portion": "medium",
+          "confidence": 0.7,
+          "categories": [
+            "red_meat",
+            "high_gi",
+            "refined_carb"
+          ],
+          "components": [
+            "猪脚",
+            "米饭",
+            "卤汁",
+            "配菜"
+          ],
+          "dbMatchHint": "猪脚饭（中国食物成分表：猪蹄（红烧））",
+          "isComposite": true,
+          "subItems": [
+            {
+              "name": "米饭",
+              "amountG": 200,
+              "confidence": "medium"
+            },
+            {
+              "name": "浇头/配料",
+              "amountG": 120,
+              "confidence": "low"
+            },
+            {
+              "name": "酱汁/油",
+              "amountG": 15,
+              "confidence": "low"
+            }
+          ]
+        }
+      ],
+      "emotions": [],
+      "symptoms": [],
+      "stressScore": null,
+      "brainFogScore": null,
+      "needsFollowUp": false,
+      "followUpQuestions": [],
+      "overallConfidence": 0.7,
+      "extractionSource": "llm",
+      "mealSummary": "晚餐：一份猪脚饭，含猪脚、米饭和配菜，但猪脚分量和配菜种类不明确",
+      "uncertaintySignals": [],
+      "extractionDisclaimer": "饮食条目为模式/频率分析用途，营养素为估算值非精确计算；中文复杂饮食的 LLM 抽取尚无成熟开源基准。",
+      "followUpHint": "当前按「晚餐」场景优化追问。"
+    },
+    {
+      "id": "63531a50-4ab9-49bb-9513-8d4380208ef7",
+      "timestamp": "2026-06-16T07:34:31.815Z",
+      "recordDate": "2026-06-13",
+      "mealSlot": "lunch",
+      "transcript": "中午吃了米饭，豆角，红烧肉，鱼",
+      "foods": [
+        {
+          "name": "米饭",
+          "cookingMethod": "煮",
+          "portion": "medium",
+          "confidence": 0.7,
+          "categories": [
+            "refined_carb",
+            "high_gi"
+          ],
+          "components": [],
+          "dbMatchHint": "米饭（蒸）",
+          "isComposite": true,
+          "subItems": [
+            {
+              "name": "主料1",
+              "amountG": 100,
+              "confidence": "low"
+            },
+            {
+              "name": "主料2/配菜",
+              "amountG": 80,
+              "confidence": "low"
+            },
+            {
+              "name": "酱汁/油",
+              "amountG": 15,
+              "confidence": "low"
+            }
+          ]
+        },
+        {
+          "name": "豆角",
+          "cookingMethod": "炒",
+          "portion": "medium",
+          "confidence": 0.6,
+          "categories": [
+            "low_fiber"
+          ],
+          "components": [],
+          "dbMatchHint": "豇豆",
+          "isComposite": true,
+          "subItems": [
+            {
+              "name": "主料1",
+              "amountG": 100,
+              "confidence": "low"
+            },
+            {
+              "name": "主料2/配菜",
+              "amountG": 80,
+              "confidence": "low"
+            },
+            {
+              "name": "酱汁/油",
+              "amountG": 15,
+              "confidence": "low"
+            }
+          ]
+        },
+        {
+          "name": "红烧肉",
+          "cookingMethod": "红烧",
+          "portion": "medium",
+          "confidence": 0.7,
+          "categories": [
+            "red_meat",
+            "purine"
+          ],
+          "components": [
+            "猪肉",
+            "糖",
+            "酱油",
+            "油"
+          ],
+          "dbMatchHint": "红烧肉",
+          "isComposite": true,
+          "subItems": [
+            {
+              "name": "主料1",
+              "amountG": 100,
+              "confidence": "low"
+            },
+            {
+              "name": "主料2/配菜",
+              "amountG": 80,
+              "confidence": "low"
+            },
+            {
+              "name": "酱汁/油",
+              "amountG": 15,
+              "confidence": "low"
+            }
+          ]
+        },
+        {
+          "name": "鱼",
+          "portion": "medium",
+          "confidence": 0.5,
+          "categories": [
+            "fish",
+            "dha"
+          ],
+          "components": [],
+          "dbMatchHint": "鱼（均值）",
+          "isComposite": true,
+          "subItems": [
+            {
+              "name": "主料1",
+              "amountG": 100,
+              "confidence": "low"
+            },
+            {
+              "name": "主料2/配菜",
+              "amountG": 80,
+              "confidence": "low"
+            },
+            {
+              "name": "酱汁/油",
+              "amountG": 15,
+              "confidence": "low"
+            }
+          ]
+        }
+      ],
+      "emotions": [],
+      "symptoms": [],
+      "stressScore": null,
+      "brainFogScore": null,
+      "needsFollowUp": false,
+      "followUpQuestions": [],
+      "overallConfidence": 0.6,
+      "extractionSource": "llm",
+      "mealSummary": "午餐：米饭、豆角、红烧肉和鱼，但分量和烹饪细节不明确，需追问。",
+      "uncertaintySignals": [],
+      "extractionDisclaimer": "饮食条目为模式/频率分析用途，营养素为估算值非精确计算；中文复杂饮食的 LLM 抽取尚无成熟开源基准。",
+      "followUpHint": "当前按「午餐」场景优化追问。"
+    },
+    {
+      "id": "94ece020-9c6d-4cef-bf41-9feaeccfdae7",
+      "timestamp": "2026-06-16T06:47:07.343Z",
+      "recordDate": "2026-06-09",
+      "transcript": "小龙虾",
+      "foods": [
+        {
+          "name": "小龙虾",
+          "cookingMethod": "煮",
+          "portion": "unknown",
+          "confidence": 0.7,
+          "categories": [
+            "seafood"
+          ],
+          "components": [
+            "小龙虾"
+          ],
+          "dbMatchHint": "小龙虾（中国食物成分表）",
+          "isComposite": false
+        }
+      ],
+      "emotions": [],
+      "symptoms": [],
+      "stressScore": null,
+      "brainFogScore": null,
+      "needsFollowUp": false,
+      "followUpQuestions": [],
+      "overallConfidence": 0.7,
+      "extractionSource": "llm",
+      "mealSummary": "用户食用了小龙虾，但份量和烹饪方式不明确，需追问。",
+      "uncertaintySignals": [],
+      "extractionDisclaimer": "饮食条目为模式/频率分析用途，营养素为估算值非精确计算；中文复杂饮食的 LLM 抽取尚无成熟开源基准。"
+    },
+    {
+      "id": "50d11b00-7232-4259-bf42-85f464a80af9",
+      "timestamp": "2026-06-16T06:45:27.073Z",
+      "recordDate": "2026-06-14",
+      "transcript": "吃了碗面",
+      "foods": [
+        {
+          "name": "拉面",
+          "cookingMethod": "煮",
+          "portion": "large",
+          "confidence": 0.9,
+          "categories": [
+            "refined_carb"
+          ],
+          "components": [
+            "面条",
+            "汤底"
+          ],
+          "dbMatchHint": "拉面（中国食物成分表）",
+          "isComposite": true,
+          "subItems": [
+            {
+              "name": "面条（熟）",
+              "amountG": 250,
+              "confidence": "medium"
+            },
+            {
+              "name": "浇头肉类",
+              "amountG": 80,
+              "confidence": "low"
+            },
+            {
+              "name": "蔬菜",
+              "amountG": 50,
+              "confidence": "low"
+            },
+            {
+              "name": "汤底/酱料",
+              "amountG": 200,
+              "confidence": "low"
+            }
+          ],
+          "uncertaintyNotes": [
+            "分量描述模糊（\"一份\"\"一碟\"\"差不多了\"等），全品类营养素只能做模式分析",
+            "餐食未说明是否含肉类/海鲜，影响嘌呤与蛋白质模式",
+            "未说明汤/汤底是否喝完（钠与嘌呤的重要来源）"
+          ],
+          "unresolved": false
+        }
+      ],
+      "emotions": [],
+      "symptoms": [],
+      "stressScore": null,
+      "brainFogScore": null,
+      "needsFollowUp": false,
+      "followUpQuestions": [],
+      "overallConfidence": 0.55,
+      "extractionSource": "llm",
+      "mealSummary": "大碗拉面，约250g面条，汤底成分未知，整体置信度较高。",
+      "uncertaintySignals": [
+        {
+          "kind": "portion_vague",
+          "severity": "high",
+          "detail": "分量描述模糊（\"一份\"\"一碟\"\"差不多了\"等），全品类营养素只能做模式分析"
+        },
+        {
+          "kind": "food_unspecified",
+          "severity": "high",
+          "detail": "仅说\"吃了面/碗面\"，未指明面种与份量"
+        },
+        {
+          "kind": "protein_unknown",
+          "severity": "high",
+          "detail": "餐食未说明是否含肉类/海鲜，影响嘌呤与蛋白质模式"
+        },
+        {
+          "kind": "soup_unknown",
+          "severity": "medium",
+          "detail": "未说明汤/汤底是否喝完（钠与嘌呤的重要来源）"
+        }
+      ],
+      "extractionDisclaimer": "饮食条目为模式/频率分析用途，营养素为估算值非精确计算；中文复杂饮食的 LLM 抽取尚无成熟开源基准。",
+      "followupMeta": {
+        "roundsTriggered": 1,
+        "questionsAsked": [
+          "portion-0-拉面",
+          "06e7f34a-3325-4d33-86f6-595a398ae0ad"
+        ],
+        "questionsSkipped": [
+          "portion-0-拉面",
+          "06e7f34a-3325-4d33-86f6-595a398ae0ad"
+        ],
+        "unresolvedFlags": [
+          "拉面",
+          "portion"
+        ]
+      },
+      "followUpRound": 1
+    }
+  ],
+  "watchRows": [
+    {
+      "date": "2026-06-07",
+      "dailySteps": 6831,
+      "activeEnergyKcal": 528,
+      "exerciseMinutes": 12,
+      "restingHr": 67,
+      "hrvSdnn": 20.15,
+      "hrvReadings": [
+        16.1,
+        15.46,
+        17.2,
+        24.09,
+        35.91,
+        12.12
+      ],
+      "spo2Readings": [
+        92,
+        98,
+        98,
+        99,
+        94,
+        99,
+        96,
+        96,
+        97,
+        97,
+        98
+      ],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": 13.5,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": 35.096,
+      "sleepHours": 7.18,
+      "deepSleepMin": 46.5,
+      "remSleepMin": 89.5,
+      "coreSleepMin": 295,
+      "inBedMin": 431,
+      "awakeEpisodes": 4,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": 130,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-08",
+      "dailySteps": 3270,
+      "activeEnergyKcal": 246.79699999999988,
+      "exerciseMinutes": 3,
+      "restingHr": null,
+      "hrvSdnn": 31.0533,
+      "hrvReadings": [
+        39.3874,
+        22.7192
+      ],
+      "spo2Readings": [
+        95,
+        98,
+        96,
+        91
+      ],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": null,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": null,
+      "sleepHours": null,
+      "deepSleepMin": null,
+      "remSleepMin": null,
+      "coreSleepMin": null,
+      "inBedMin": 660,
+      "awakeEpisodes": null,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": 42,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-09",
+      "dailySteps": 6736,
+      "activeEnergyKcal": 1035.3289999999795,
+      "exerciseMinutes": 87,
+      "restingHr": 66,
+      "hrvSdnn": 50.09325,
+      "hrvReadings": [
+        110.117,
+        14.2637,
+        56.7097,
+        19.2826
+      ],
+      "spo2Readings": [
+        97,
+        97,
+        99,
+        100
+      ],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": null,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": null,
+      "sleepHours": null,
+      "deepSleepMin": null,
+      "remSleepMin": null,
+      "coreSleepMin": null,
+      "inBedMin": 660,
+      "awakeEpisodes": null,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": 54,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-10",
+      "dailySteps": null,
+      "activeEnergyKcal": null,
+      "exerciseMinutes": null,
+      "restingHr": null,
+      "hrvSdnn": null,
+      "hrvReadings": [],
+      "spo2Readings": [],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": null,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": null,
+      "sleepHours": null,
+      "deepSleepMin": null,
+      "remSleepMin": null,
+      "coreSleepMin": null,
+      "inBedMin": null,
+      "awakeEpisodes": null,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": null,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-11",
+      "dailySteps": null,
+      "activeEnergyKcal": null,
+      "exerciseMinutes": null,
+      "restingHr": null,
+      "hrvSdnn": null,
+      "hrvReadings": [],
+      "spo2Readings": [],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": null,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": null,
+      "sleepHours": null,
+      "deepSleepMin": null,
+      "remSleepMin": null,
+      "coreSleepMin": null,
+      "inBedMin": null,
+      "awakeEpisodes": null,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": null,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-12",
+      "dailySteps": 1400,
+      "activeEnergyKcal": null,
+      "exerciseMinutes": null,
+      "restingHr": null,
+      "hrvSdnn": null,
+      "hrvReadings": [],
+      "spo2Readings": [],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": null,
+      "walkingAsymmetryPct": 0,
+      "walkingSteadiness": null,
+      "wristTempRaw": null,
+      "sleepHours": null,
+      "deepSleepMin": null,
+      "remSleepMin": null,
+      "coreSleepMin": null,
+      "inBedMin": 660,
+      "awakeEpisodes": null,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": null,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-13",
+      "dailySteps": 4995,
+      "activeEnergyKcal": null,
+      "exerciseMinutes": null,
+      "restingHr": null,
+      "hrvSdnn": null,
+      "hrvReadings": [],
+      "spo2Readings": [],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": null,
+      "walkingAsymmetryPct": 0,
+      "walkingSteadiness": null,
+      "wristTempRaw": null,
+      "sleepHours": null,
+      "deepSleepMin": null,
+      "remSleepMin": null,
+      "coreSleepMin": null,
+      "inBedMin": null,
+      "awakeEpisodes": null,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": null,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-14",
+      "dailySteps": null,
+      "activeEnergyKcal": null,
+      "exerciseMinutes": null,
+      "restingHr": null,
+      "hrvSdnn": null,
+      "hrvReadings": [],
+      "spo2Readings": [],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": null,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": null,
+      "sleepHours": null,
+      "deepSleepMin": null,
+      "remSleepMin": null,
+      "coreSleepMin": null,
+      "inBedMin": null,
+      "awakeEpisodes": null,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": null,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-15",
+      "dailySteps": 6672,
+      "activeEnergyKcal": 587,
+      "exerciseMinutes": 35,
+      "restingHr": 67,
+      "hrvSdnn": 56.66,
+      "hrvReadings": [
+        50.994,
+        56.66,
+        59.493
+      ],
+      "spo2Readings": [
+        96,
+        97,
+        98,
+        97
+      ],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": 13.5,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": 35.84,
+      "sleepHours": 5.81,
+      "deepSleepMin": 63,
+      "remSleepMin": 77,
+      "coreSleepMin": 192,
+      "inBedMin": 374,
+      "awakeEpisodes": 5,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": 93,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-16",
+      "dailySteps": 7068,
+      "activeEnergyKcal": 615,
+      "exerciseMinutes": 8,
+      "restingHr": 66,
+      "hrvSdnn": 67.15,
+      "hrvReadings": [
+        60.43500000000001,
+        67.15,
+        70.50750000000001
+      ],
+      "spo2Readings": [
+        96,
+        97,
+        98,
+        97
+      ],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": 13.5,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": 35.86,
+      "sleepHours": 7.9,
+      "deepSleepMin": 85,
+      "remSleepMin": 104,
+      "coreSleepMin": 261,
+      "inBedMin": 499,
+      "awakeEpisodes": 2,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": 101,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-17",
+      "dailySteps": 7463,
+      "activeEnergyKcal": 642,
+      "exerciseMinutes": 18,
+      "restingHr": 67,
+      "hrvSdnn": 58.64,
+      "hrvReadings": [
+        52.776,
+        58.64,
+        61.572
+      ],
+      "spo2Readings": [
+        96,
+        97,
+        98,
+        97
+      ],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": 13.5,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": 35.88,
+      "sleepHours": 6.03,
+      "deepSleepMin": 65,
+      "remSleepMin": 80,
+      "coreSleepMin": 199,
+      "inBedMin": 387,
+      "awakeEpisodes": 5,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": 109,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-18",
+      "dailySteps": 7858,
+      "activeEnergyKcal": 670,
+      "exerciseMinutes": 35,
+      "restingHr": 65,
+      "hrvSdnn": 67.16,
+      "hrvReadings": [
+        60.443999999999996,
+        67.16,
+        70.518
+      ],
+      "spo2Readings": [
+        96,
+        97,
+        98,
+        97
+      ],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": 13.5,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": 35.9,
+      "sleepHours": 7.71,
+      "deepSleepMin": 83,
+      "remSleepMin": 102,
+      "coreSleepMin": 254,
+      "inBedMin": 488,
+      "awakeEpisodes": 2,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": 117,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-19",
+      "dailySteps": 7354,
+      "activeEnergyKcal": 635,
+      "exerciseMinutes": 18,
+      "restingHr": 66,
+      "hrvSdnn": 59.42,
+      "hrvReadings": [
+        53.478,
+        59.42,
+        62.391000000000005
+      ],
+      "spo2Readings": [
+        96,
+        97,
+        98,
+        97
+      ],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": 13.5,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": 35.82,
+      "sleepHours": 6,
+      "deepSleepMin": 65,
+      "remSleepMin": 79,
+      "coreSleepMin": 198,
+      "inBedMin": 385,
+      "awakeEpisodes": 5,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": 125,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-20",
+      "dailySteps": 7749,
+      "activeEnergyKcal": 662,
+      "exerciseMinutes": 8,
+      "restingHr": 65,
+      "hrvSdnn": 69.52,
+      "hrvReadings": [
+        62.568,
+        69.52,
+        72.996
+      ],
+      "spo2Readings": [
+        96,
+        97,
+        98,
+        97
+      ],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": 13.5,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": 35.84,
+      "sleepHours": 8.01,
+      "deepSleepMin": 87,
+      "remSleepMin": 106,
+      "coreSleepMin": 264,
+      "inBedMin": 506,
+      "awakeEpisodes": 2,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": 133,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-21",
+      "dailySteps": 8145,
+      "activeEnergyKcal": 690,
+      "exerciseMinutes": 35,
+      "restingHr": 65,
+      "hrvSdnn": 51.19,
+      "hrvReadings": [
+        46.071,
+        51.19,
+        53.7495
+      ],
+      "spo2Readings": [
+        96,
+        97,
+        98,
+        97
+      ],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": 13.5,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": 35.86,
+      "sleepHours": 5.97,
+      "deepSleepMin": 64,
+      "remSleepMin": 79,
+      "coreSleepMin": 197,
+      "inBedMin": 383,
+      "awakeEpisodes": 5,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": 141,
+      "environmentalNoiseDb": null
+    },
+    {
+      "date": "2026-06-22",
+      "dailySteps": 8540,
+      "activeEnergyKcal": 718,
+      "exerciseMinutes": 8,
+      "restingHr": 64,
+      "hrvSdnn": 69.54,
+      "hrvReadings": [
+        62.586000000000006,
+        69.54,
+        73.01700000000001
+      ],
+      "spo2Readings": [
+        96,
+        97,
+        98,
+        97
+      ],
+      "spo2DesatEvents": null,
+      "respiratoryRateSleep": 13.5,
+      "walkingAsymmetryPct": null,
+      "walkingSteadiness": null,
+      "wristTempRaw": 35.88,
+      "sleepHours": 7.82,
+      "deepSleepMin": 84,
+      "remSleepMin": 103,
+      "coreSleepMin": 258,
+      "inBedMin": 494,
+      "awakeEpisodes": 2,
+      "vo2max": null,
+      "cardioRecovery1min": null,
+      "daylightMinutes": 149,
+      "environmentalNoiseDb": null
+    }
+  ],
+  "dietHistory": [
+    {
+      "foodName": "拉面",
+      "count": 1,
+      "defaultPortion": "large",
+      "defaultCooking": "煮",
+      "lastSeen": "2026-06-14"
+    },
+    {
+      "foodName": "小龙虾",
+      "count": 1,
+      "defaultCooking": "煮",
+      "lastSeen": "2026-06-09"
+    },
+    {
+      "foodName": "米饭",
+      "count": 1,
+      "defaultPortion": "medium",
+      "defaultCooking": "煮",
+      "lastSeen": "2026-06-13"
+    },
+    {
+      "foodName": "红烧肉",
+      "count": 1,
+      "defaultPortion": "medium",
+      "defaultCooking": "红烧",
+      "lastSeen": "2026-06-13"
+    },
+    {
+      "foodName": "猪脚饭",
+      "count": 1,
+      "defaultPortion": "medium",
+      "defaultCooking": "红烧",
+      "lastSeen": "2026-06-15"
+    },
+    {
+      "foodName": "珍珠奶茶",
+      "count": 1,
+      "defaultPortion": "medium",
+      "lastSeen": "2026-06-16"
+    }
+  ],
+  "profile": {
+    "age": 32,
+    "sex": "female"
+  },
+  "seedId": "demo-wellness-14d-v1"
+}

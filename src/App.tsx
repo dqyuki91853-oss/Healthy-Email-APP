@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import { AppLayout } from './components/layout/AppLayout'
 import { PrivacyBanner } from './components/layout/PrivacyBanner'
 import { useAppStore } from './store/useAppStore'
@@ -17,6 +17,10 @@ import { WomenPage } from './pages/WomenPage'
 import { AlertsPage } from './pages/AlertsPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { WuyinPracticePage } from './pages/WuyinPracticePage'
+import { ChroniclePage } from './pages/ChroniclePage'
+import { CollectionPage } from './pages/CollectionPage'
+import { SeasonsPage } from './pages/SeasonsPage'
+import { BloodPressurePage } from './pages/BloodPressurePage'
 
 export default function App() {
   const loadData = useAppStore((s) => s.loadData)
@@ -52,6 +56,12 @@ export default function App() {
           <Route path="women" element={<WomenPage />} />
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="collection" element={<CollectionPage />} />
+          <Route path="chronicle" element={<Navigate to="/collection" replace />} />
+          <Route path="chronicle-old" element={<ChroniclePage />} />
+          <Route path="seasons" element={<SeasonsPage />} />
+          <Route path="blood-pressure" element={<BloodPressurePage />} />
+          <Route path="glucose" element={<Navigate to="/blood-pressure" replace />} />
           <Route path="practice/wuyin" element={<WuyinPracticePage />} />
         </Route>
       </Routes>

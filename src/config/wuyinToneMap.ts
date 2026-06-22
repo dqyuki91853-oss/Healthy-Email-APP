@@ -112,10 +112,10 @@ export const WUYIN_PRESCRIPTION_RULES: WuyinPrescriptionRule[] = [
   {
     ruleId: 'WY-calm-01',
     moodTag: 'calm',
-    toneId: null,
-    durationSec: 0,
-    humPattern: 'none',
-    instructionText: '',
+    toneId: 'yu',
+    durationSec: 75,
+    humPattern: 'long-exhale-hum',
+    instructionText: '「羽」音低而柔，像水落静潭，帮身心慢慢沉静。',
   },
 ]
 

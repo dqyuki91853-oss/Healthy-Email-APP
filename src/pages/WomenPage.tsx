@@ -2,6 +2,7 @@ import { useAppStore } from '../store/useAppStore'
 import { Card } from '../components/ui/Card'
 import { ReliabilityBadge } from '../components/health/ReliabilityBadge'
 import { DirectionScoreCard } from '../components/health/DirectionScoreCard'
+import { WatchMetricAppendix } from '../components/health/WatchMetricAppendix'
 
 export function WomenPage() {
   const { watchRows, profile, prediction } = useAppStore()
@@ -53,6 +54,8 @@ export function WomenPage() {
           </p>
         </Card>
       </div>
+
+      <WatchMetricAppendix domain="women" />
     </div>
   )
 }

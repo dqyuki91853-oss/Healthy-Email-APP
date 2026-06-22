@@ -1,89 +1,67 @@
 import type { ReactNode } from 'react'
 
 interface Props {
-  /** Full-width top row — EnvelopeStage */
-  hero: ReactNode
-  /** Bottom row body — WellnessSection + WeeklyActivitySection in 55/45 grid */
-  body: ReactNode
+  envelope: ReactNode
+  weather?: ReactNode
+  tea?: ReactNode
+  plant?: ReactNode
+  seasons?: ReactNode
+  therapy?: ReactNode
+  rhythm?: ReactNode
 }
 
 /**
- * v3 two-row dashboard layout.
- *
- * Desktop (≥1024px): hero full-width top + body 55/45 grid below,
- *   one screen, overflow hidden; only section interiors scroll.
- * Mobile (<1024px): single-column stack, full page scroll.
+ * 首页 — 例图果蔬碗布局：信封左上，天气/茶语/植物园/四季在右环绕；下方横向五音+作息。
  */
-export function HomeDashboard({ hero, body }: Props) {
+export function HomeDashboard({
+  envelope,
+  weather,
+  tea,
+  plant,
+  seasons,
+  therapy,
+  rhythm,
+}: Props) {
   return (
-    <>
-      <style>{v3Styles}</style>
-      <div className="home-v3">
-        {/* Row 1: Hero — full width envelope stage */}
-        <div className="row-hero">
-          {hero}
-        </div>
+    <div className="home-studio">
+      <section className="home-card home-studio__hero-card">
+        <div className="home-studio__hero-layout">
+          <div className="home-studio__hero-envelope">{envelope}</div>
 
-        {/* Row 2: Body — WellnessSection (55%) + WeeklyActivity (45%) */}
-        <div className="row-body">
-          {body}
+          <div className="home-studio__hero-rail">
+            {weather && (
+              <section className="home-card home-card--weather-nested">{weather}</section>
+            )}
+
+            {(tea || plant || seasons) && (
+              <div className="home-studio__hero-chronicle">
+                {(tea || plant) && (
+                  <div className="home-studio__hero-wellness">
+                    {tea && (
+                      <section className="home-card home-card--tea-nested">{tea}</section>
+                    )}
+                    {plant && (
+                      <section className="home-card home-card--plant-nested">{plant}</section>
+                    )}
+                  </div>
+                )}
+                {seasons && (
+                  <section className="home-card home-card--panel home-card--panel-nested">
+                    {seasons}
+                  </section>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </>
+      </section>
+
+      {(therapy || rhythm) && (
+        <div className="home-studio__dojo-horizontal" id="wellness-dojo">
+          {therapy && <div className="home-studio__dojo-therapy">{therapy}</div>}
+          {rhythm && <div className="home-studio__dojo-rhythm">{rhythm}</div>}
+        </div>
+      )}
+    </div>
   )
 }
-
-const v3Styles = `
-.home-v3 {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  height: calc(100vh - 100px);
-  overflow: hidden;
-}
-
-/* Full-width top hero row — compressed for Dojo layout (Scheme B) */
-.row-hero {
-  flex: 0 0 auto;
-  min-height: min(220px, 24vh);
-}
-
-/* Bottom body row — 55/45 grid: 五音+作息 expanded, 本周活动 compact */
-.row-body {
-  flex: 1 1 0;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(340px, 58fr) minmax(240px, 42fr);
-  gap: 16px;
-}
-
-.row-body > * {
-  min-height: 0;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.row-body > *::-webkit-scrollbar {
-  display: none;
-  width: 0;
-}
-
-@media (max-width: 1023px) {
-  .home-v3 {
-    height: auto;
-    overflow: visible;
-  }
-
-  .row-hero {
-    min-height: 240px;
-  }
-
-  .row-body {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    flex: none;
-  }
-}
-`

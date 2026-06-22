@@ -51,6 +51,1972 @@
 }
 
 /* ───────────────────────────────────────
+   Weather Chronicle theme (Phase 0)
+   Scoped under .weather-chronicle — Phase 1+ pages
+   ─────────────────────────────────────── */
+.weather-chronicle {
+  /* Sky gradients */
+  --weather-sky-clear-from: #FDFBF7;
+  --weather-sky-clear-to: #E8F4FD;
+  --weather-sky-overcast-from: #E8E4DE;
+  --weather-sky-overcast-to: #D0CCD0;
+  --weather-sky-dawn-from: #F8E9BB;
+  --weather-sky-dawn-to: #F1C6CD;
+  --weather-sky-dusk-from: #DD7C64;
+  --weather-sky-dusk-to: #436C85;
+
+  /* Semantic weather palette */
+  --weather-sun: #EBC97F;
+  --weather-rain: #6B8CAE;
+  --weather-leaf: #63AD96;
+  --weather-amber: #C89B6B;
+  --weather-frost: #B0C4DE;
+  --weather-fog: #B0A8A0;
+  --weather-cloud: #8A8A8A;
+
+  /* Typography (cooler secondary than --color-muted) */
+  --weather-text: #2C2C2C;
+  --weather-text-soft: #6B7280;
+
+  /* Season accents */
+  --season-spring: #63AD96;
+  --season-spring-soft: #A8D5BA;
+  --season-summer: #EBC97F;
+  --season-summer-soft: #F8E9BB;
+  --season-autumn: #C89B6B;
+  --season-autumn-soft: #DD7C64;
+  --season-winter: #6B8CAE;
+  --season-winter-soft: #B0C4DE;
+
+  /* Card surfaces */
+  --weather-card-bg: #FFFFFF;
+  --weather-card-border: rgba(107, 140, 174, 0.14);
+  --weather-card-shadow: 0 4px 24px rgba(44, 44, 44, 0.06);
+  --weather-scene-opacity: 0.12;
+}
+
+.weather-chronicle-sky-clear {
+  background: linear-gradient(
+    160deg,
+    var(--weather-sky-clear-from) 0%,
+    var(--weather-sky-clear-to) 100%
+  );
+}
+
+.weather-chronicle-sky-overcast {
+  background: linear-gradient(
+    160deg,
+    var(--weather-sky-overcast-from) 0%,
+    var(--weather-sky-overcast-to) 100%
+  );
+}
+
+.weather-chronicle-card {
+  background: var(--weather-card-bg);
+  border: 1px solid var(--weather-card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--weather-card-shadow);
+}
+
+/* 天气英雄卡：透明底，让 pattern 层可见（覆盖 .weather-chronicle-card 白底） */
+.weather-chronicle-card.weather-hero-card {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 8px 32px rgba(107, 140, 174, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+/* ── Homepage envelope + weather hero (template p2–p4) ── */
+.envelope-stage {
+  isolation: isolate;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.envelope-stage--hero {
+  min-height: 0;
+  padding: 4px 0 6px;
+}
+
+.envelope-stage__glow {
+  position: absolute;
+  inset: 6% 8% 22%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(176, 196, 222, 0.35) 0%,
+    rgba(195, 230, 220, 0.18) 45%,
+    transparent 72%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.envelope-stage__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #436c85;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(176, 196, 222, 0.45);
+  box-shadow: 0 4px 16px rgba(67, 108, 133, 0.06);
+}
+
+.envelope-stage__badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #c46a52;
+  box-shadow: 0 0 0 3px rgba(196, 106, 82, 0.2);
+}
+
+.envelope-stage__weather-hint {
+  margin-bottom: 4px;
+}
+
+.envelope-stage__figure {
+  cursor: pointer;
+  z-index: 2;
+  width: min(100%, 340px);
+  margin-inline: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.envelope-open--hero {
+  width: min(100%, 340px);
+  max-width: 360px;
+}
+
+.envelope-open--bowl {
+  width: min(100%, 300px);
+  max-width: 320px;
+}
+
+.envelope-open--hero .envelope-open__svg {
+  filter: drop-shadow(0 14px 36px rgba(44, 44, 44, 0.1));
+}
+
+@media (max-width: 640px) {
+  .envelope-open--hero {
+    width: min(100%, 300px);
+  }
+}
+
+.envelope-botanical {
+  z-index: 2;
+}
+
+.envelope-stage__inner {
+  z-index: 4;
+}
+
+.envelope-botanical__svg {
+  width: 100%;
+  height: 100%;
+}
+
+.envelope-botanical__cluster--bl {
+  transform-origin: 0% 100%;
+  animation: envelopeBotanicalSway 9s ease-in-out infinite;
+}
+
+.envelope-botanical__cluster--br {
+  transform-origin: 100% 100%;
+  animation: envelopeBotanicalSway 11s ease-in-out infinite reverse;
+}
+
+.envelope-botanical__cluster--bottom {
+  transform-origin: 50% 100%;
+  animation: envelopeBotanicalSway 10s ease-in-out infinite;
+}
+
+@keyframes envelopeBotanicalSway {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(0.8deg); }
+}
+
+.weather-pattern-shell {
+  z-index: 0;
+}
+
+.weather-pattern-shell__gradient {
+  opacity: 1;
+}
+
+.weather-pattern-shell__ripples {
+  z-index: 1;
+}
+
+.weather-pattern-shell__glass {
+  z-index: 2;
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  backdrop-filter: blur(4px) saturate(1.05);
+  -webkit-backdrop-filter: blur(4px) saturate(1.05);
+}
+
+.weather-pattern-shell__mesh {
+  z-index: 1;
+  background-image:
+    radial-gradient(circle at 18% 28%, rgba(255, 255, 255, 0.45) 0%, transparent 40%),
+    radial-gradient(circle at 82% 72%, rgba(99, 173, 150, 0.2) 0%, transparent 36%);
+}
+
+.weather-hero-card {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.weather-hero-card__icon-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 16px rgba(107, 140, 174, 0.12);
+}
+
+.weather-hero-card__icon-ring {
+  border: 2.5px solid rgba(46, 96, 152, 0.35);
+  box-shadow:
+    inset 0 0 0 10px rgba(255, 255, 255, 0.2),
+    0 0 40px rgba(46, 96, 152, 0.18);
+  opacity: 0.9;
+}
+
+.envelope-botanical-svg circle,
+.envelope-botanical-svg path,
+.envelope-botanical-svg ellipse {
+  vector-effect: non-scaling-stroke;
+}
+
+.weather-hero-card__pill,
+.weather-hero-card__chip {
+  box-shadow: 0 1px 4px rgba(44, 44, 44, 0.04);
+}
+
+/* Homepage 档案馆 + 四季 */
+.home-chronicle-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--weather-card-border);
+  box-shadow: var(--weather-card-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.home-chronicle-panel__header {
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.home-chronicle-panel__kicker {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--weather-rain);
+}
+
+.home-chronicle-panel__title {
+  margin-top: 2px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--weather-text);
+}
+
+.home-chronicle-panel__link {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--weather-leaf);
+}
+
+.home-chronicle-panel__link:hover {
+  text-decoration: underline;
+}
+
+.home-chronicle-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.home-chronicle-panel__empty {
+  padding: 16px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px dashed rgba(107, 140, 174, 0.2);
+  text-align: center;
+}
+
+.home-chronicle-panel__more {
+  display: block;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--weather-leaf);
+}
+
+.home-chronicle-panel--archive .weather-chronicle-card,
+.home-chronicle-panel--seasons .weather-chronicle-card {
+  box-shadow: none;
+  border-color: rgba(107, 140, 174, 0.1);
+}
+
+.home-chronicle-panel--seasons .weather-chronicle-card {
+  padding: 12px 14px;
+}
+
+.home-chronicle-panel--seasons .weather-chronicle-card h2 {
+  font-size: 1rem;
+}
+
+.home-chronicle-panel--archive .weather-chronicle-card {
+  padding: 12px 14px;
+}
+
+/* ── Homepage Studio layout（例图：果蔬碗 + 右栏环绕）── */
+.home-studio {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Hero 主卡：信封左锚 + 右侧天气/案卷 ── */
+.home-studio__hero-card {
+  padding: 20px 22px 22px;
+  min-height: 0;
+}
+
+.home-studio__hero-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 38fr) minmax(0, 62fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.home-studio__hero-envelope {
+  min-width: 0;
+}
+
+.home-studio__hero-rail {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.home-studio__hero-chronicle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+.home-studio__hero-wellness {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.home-card--weather-nested {
+  min-height: 200px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(107, 140, 174, 0.12);
+  box-shadow: none;
+}
+
+.home-card--weather-nested .weather-hero-card {
+  min-height: 100%;
+  border: none;
+  box-shadow: none;
+  border-radius: inherit;
+  padding: 16px 18px;
+}
+
+.home-card--panel-nested {
+  min-height: 148px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(107, 140, 174, 0.1);
+  box-shadow: none;
+}
+
+/* ── 身体茶语卡片 ── */
+.body-tea-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 148px;
+  padding: 14px 16px 12px;
+  border-radius: inherit;
+}
+
+.body-tea-card--warm {
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--weather-amber) 18%, var(--color-surface-2)) 0%,
+    color-mix(in srgb, var(--color-cream) 55%, white) 100%
+  );
+}
+
+.body-tea-card--cool {
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--color-teal) 14%, var(--color-surface-2)) 0%,
+    color-mix(in srgb, #d8efe8 40%, white) 100%
+  );
+}
+
+.body-tea-card--neutral {
+  background: linear-gradient(
+    165deg,
+    var(--color-surface-2) 0%,
+    color-mix(in srgb, var(--color-cream) 35%, white) 100%
+  );
+}
+
+.body-tea-card__header {
+  margin-bottom: 4px;
+}
+
+.body-tea-card__kicker {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-teal) 70%, var(--weather-text-soft));
+}
+
+.body-tea-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+}
+
+.body-tea-card__visual {
+  position: relative;
+  width: 64px;
+  height: 52px;
+  margin-bottom: 4px;
+}
+
+.body-tea-card__cup {
+  width: 100%;
+  height: 100%;
+}
+
+.body-tea-card__leaf {
+  position: absolute;
+  right: -2px;
+  bottom: 2px;
+  font-size: 14px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+}
+
+.body-tea-card__steam path {
+  animation: body-tea-steam 3.2s ease-in-out infinite;
+}
+
+.body-tea-card__steam path:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.body-tea-card__steam path:nth-child(3) {
+  animation-delay: 1.2s;
+}
+
+@keyframes body-tea-steam {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translateY(4px);
+  }
+  50% {
+    opacity: 0.75;
+    transform: translateY(-6px);
+  }
+}
+
+.body-tea-card__name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--weather-text);
+  letter-spacing: 0.04em;
+}
+
+.body-tea-card__whisper {
+  margin: 2px 0 0;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--weather-text-soft);
+}
+
+.body-tea-card__footer {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.body-tea-card__nature {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--color-teal) 55%, var(--weather-text-soft));
+}
+
+/* ── 身体植物园卡片 ── */
+.body-plant-garden {
+  display: flex;
+  flex-direction: column;
+  min-height: 168px;
+  padding: 14px 16px 12px;
+  border-radius: inherit;
+  background: var(--color-surface-2);
+}
+
+.body-plant-garden__header {
+  margin-bottom: 2px;
+}
+
+.body-plant-garden__kicker {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--weather-amber) 75%, var(--weather-text-soft));
+}
+
+.body-plant-garden__body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 108px;
+}
+
+.body-plant-garden__plant {
+  width: min(100%, 120px);
+  height: auto;
+}
+
+.body-plant-garden__foliage {
+  transform-origin: 60px 94px;
+  animation: body-plant-sway 4.5s ease-in-out infinite;
+}
+
+.body-plant-garden--wilted .body-plant-garden__foliage,
+.body-plant-garden--sleepy .body-plant-garden__foliage {
+  animation: none;
+}
+
+@keyframes body-plant-sway {
+  0%,
+  100% {
+    transform: rotate(calc(var(--plant-sway, 2.5deg) * -1));
+  }
+  50% {
+    transform: rotate(var(--plant-sway, 2.5deg));
+  }
+}
+
+.body-plant-garden__whisper {
+  margin: 6px 0 0;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--weather-text-soft);
+}
+
+.home-card--plant-nested {
+  min-height: 168px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(107, 140, 174, 0.1);
+  box-shadow: none;
+}
+
+.home-card--tea-nested {
+  min-height: 148px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(107, 140, 174, 0.1);
+  box-shadow: none;
+}
+
+/* ── 珍藏馆 ── */
+.collection-page__header {
+  margin-bottom: 20px;
+}
+
+.collection-page__kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--weather-rain);
+}
+
+.collection-page__title {
+  margin: 6px 0 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--weather-text);
+}
+
+.collection-page__subtitle {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--weather-text-soft);
+}
+
+.collection-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-surface-2) 80%, white);
+}
+
+.collection-tabs__btn {
+  flex: 1;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  color: var(--weather-text-soft);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.collection-tabs__btn--active {
+  background: white;
+  color: var(--weather-text);
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(44, 44, 44, 0.06);
+}
+
+.collection-page__panel {
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-cream) 22%, var(--color-surface-2));
+  border: 1px solid rgba(107, 140, 174, 0.1);
+  padding: 18px 16px 20px;
+}
+
+.collection-placeholder {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--weather-text-soft);
+}
+
+.collection-placeholder__sub {
+  margin-top: 8px;
+  font-size: 0.8125rem;
+  opacity: 0.8;
+}
+
+/* 茶语收藏 */
+.tea-collection__header {
+  margin-bottom: 16px;
+}
+
+.tea-collection__progress-label {
+  margin: 0 0 8px;
+  font-size: 0.875rem;
+  color: var(--weather-text-soft);
+}
+
+.tea-collection__progress-label strong {
+  color: var(--weather-text);
+  font-weight: 600;
+}
+
+.tea-collection__progress {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(107, 140, 174, 0.12);
+  overflow: hidden;
+}
+
+.tea-collection__progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-teal), var(--weather-amber));
+  transition: width 0.4s ease;
+}
+
+.tea-collection__table {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-x: auto;
+}
+
+.tea-collection__head-row,
+.tea-collection__row {
+  display: grid;
+  grid-template-columns: 32px repeat(6, minmax(72px, 1fr));
+  gap: 6px;
+  min-width: 520px;
+}
+
+.tea-collection__corner {
+  min-height: 1px;
+}
+
+.tea-collection__col-head,
+.tea-collection__row-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--weather-text-soft);
+}
+
+.tea-collection__row-head {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 0.12em;
+}
+
+.tea-collection__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 88px;
+  padding: 8px 4px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  text-align: center;
+  cursor: default;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.tea-collection__cell--unlocked {
+  background: color-mix(in srgb, white 88%, var(--color-cream));
+  border-color: color-mix(in srgb, var(--color-teal) 18%, transparent);
+  box-shadow: 0 2px 10px rgba(99, 173, 150, 0.1);
+  cursor: pointer;
+}
+
+.tea-collection__cell--unlocked:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(99, 173, 150, 0.16);
+}
+
+.tea-collection__cell--locked {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(107, 140, 174, 0.08);
+  opacity: 0.72;
+}
+
+.tea-collection__cell-leaf {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.tea-collection__cell-mystery {
+  font-size: 20px;
+  line-height: 1;
+  color: var(--weather-text-soft);
+  opacity: 0.5;
+}
+
+.tea-collection__cell-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--weather-text);
+  line-height: 1.3;
+}
+
+.tea-collection__cell-name--locked {
+  color: var(--weather-text-soft);
+}
+
+.tea-collection__cell-combo {
+  font-size: 10px;
+  color: var(--weather-text-soft);
+}
+
+.tea-collection__cell-badge {
+  margin-top: 2px;
+  font-size: 9px;
+  color: var(--color-teal);
+  letter-spacing: 0.04em;
+}
+
+.tea-collection__hint {
+  margin: 16px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--weather-text-soft);
+}
+
+.tea-detail-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: color-mix(in srgb, var(--color-text) 35%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.tea-detail-modal__sheet {
+  position: relative;
+  width: min(100%, 320px);
+  padding: 28px 24px 24px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--color-cream) 40%, white),
+    white
+  );
+  box-shadow: var(--shadow-float);
+  text-align: center;
+}
+
+.tea-detail-modal__close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--weather-text-soft);
+  cursor: pointer;
+}
+
+.tea-detail-modal__leaf {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.tea-detail-modal__name {
+  margin: 10px 0 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--weather-text);
+}
+
+.tea-detail-modal__whisper {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--weather-text-soft);
+}
+
+.tea-detail-modal__meta {
+  margin: 20px 0 0;
+  display: grid;
+  gap: 10px;
+  text-align: left;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+}
+
+.tea-detail-modal__meta div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.8125rem;
+}
+
+.tea-detail-modal__meta dt {
+  color: var(--weather-text-soft);
+}
+
+.tea-detail-modal__meta dd {
+  margin: 0;
+  font-weight: 500;
+  color: var(--weather-text);
+}
+
+/* 植物图鉴 */
+.plant-atlas__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.plant-atlas__species-title {
+  margin: 0 0 10px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--weather-text);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.plant-atlas__species-count {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-teal);
+}
+
+.plant-atlas__states {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.plant-atlas__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 8px 4px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  text-align: center;
+}
+
+.plant-atlas__state--seen {
+  background: color-mix(in srgb, var(--color-teal) 12%, white);
+  border-color: color-mix(in srgb, var(--color-teal) 22%, transparent);
+}
+
+.plant-atlas__state--unseen {
+  background: rgba(255, 255, 255, 0.4);
+  border-color: rgba(107, 140, 174, 0.1);
+  opacity: 0.65;
+}
+
+.plant-atlas__state-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--weather-text);
+}
+
+.plant-atlas__state--unseen .plant-atlas__state-label {
+  color: var(--weather-text-soft);
+}
+
+.plant-atlas__state-mark {
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  color: var(--color-teal);
+}
+
+.plant-atlas__state--unseen .plant-atlas__state-mark {
+  color: var(--weather-text-soft);
+}
+
+.plant-atlas__diary {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(107, 140, 174, 0.12);
+}
+
+.plant-atlas__diary-title {
+  margin: 0 0 12px;
+  font-size: 0.8125rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--weather-amber) 80%, var(--weather-text-soft));
+}
+
+.plant-atlas__diary-empty {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--weather-text-soft);
+}
+
+.plant-atlas__diary-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.plant-atlas__diary-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--weather-text);
+}
+
+.plant-atlas__diary-item::before {
+  content: '·';
+  flex-shrink: 0;
+  color: var(--color-teal);
+  font-weight: 600;
+}
+
+.plant-atlas__diary-date {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--weather-text-soft);
+  min-width: 2.5rem;
+}
+
+.plant-atlas__diary-text {
+  flex: 1;
+}
+
+@media (max-width: 520px) {
+  .plant-atlas__states {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* 来信归档 */
+.letter-archive__count {
+  margin: 0 0 14px;
+  font-size: 0.875rem;
+  color: var(--weather-text-soft);
+}
+
+.letter-archive__empty {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--weather-text-soft);
+}
+
+.letter-archive__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.letter-archive__card {
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--color-cream) 35%, white);
+  border: 1px solid rgba(107, 140, 174, 0.12);
+  box-shadow: 0 4px 16px rgba(44, 44, 44, 0.05);
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.letter-archive__card--open {
+  box-shadow: 0 8px 24px rgba(44, 44, 44, 0.08);
+}
+
+.letter-archive__card-head {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.letter-archive__card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.letter-archive__date {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--weather-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.letter-archive__meta {
+  font-size: 0.8125rem;
+  color: var(--weather-text-soft);
+}
+
+.letter-archive__weather {
+  margin-right: 4px;
+}
+
+.letter-archive__preview {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--weather-text);
+  opacity: 0.88;
+}
+
+.letter-archive__toggle {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.75rem;
+  color: var(--color-teal);
+  letter-spacing: 0.04em;
+}
+
+.letter-archive__body {
+  padding: 0 16px 16px;
+}
+
+.letter-archive__paper {
+  position: relative;
+  padding: 20px 18px;
+  border-radius: 10px;
+  background: white;
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 27px,
+    rgba(107, 140, 174, 0.1) 27px,
+    rgba(107, 140, 174, 0.1) 28px
+  );
+  box-shadow: inset 0 0 0 1px rgba(107, 140, 174, 0.08);
+}
+
+.letter-archive__paper-icon {
+  margin-bottom: 12px;
+  opacity: 0.85;
+}
+
+.letter-archive__paragraph {
+  margin: 0 0 12px;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: var(--weather-text);
+  white-space: pre-wrap;
+}
+
+.letter-archive__paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.letter-archive__reply {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--weather-amber) 12%, var(--color-surface-2));
+  border-left: 3px solid var(--weather-amber);
+}
+
+.letter-archive__reply-label {
+  margin: 0 0 6px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--weather-amber) 85%, var(--weather-text-soft));
+}
+
+.letter-archive__reply-text {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--weather-text);
+  white-space: pre-wrap;
+}
+
+.home-studio__dojo-therapy .weather-dojo,
+.home-studio__dojo-rhythm .weather-dojo {
+  height: 100%;
+  min-height: 340px;
+  border-radius: inherit;
+}
+
+.home-studio__dojo-therapy .weather-dojo__inner,
+.home-studio__dojo-rhythm .weather-dojo__inner {
+  min-height: 0;
+  max-height: none;
+  padding: 16px;
+}
+
+/* 信封 — 果蔬碗左锚 */
+.envelope-stage--bowl {
+  padding: 0;
+  align-items: flex-start;
+}
+
+.envelope-stage--bowl .envelope-stage__glow {
+  inset: 10% 20% 30% 0;
+}
+
+.envelope-stage--bowl .envelope-stage__figure {
+  width: min(100%, 320px);
+  margin-inline: 0;
+}
+
+.envelope-stage--bowl .envelope-open--hero {
+  width: min(100%, 320px);
+}
+
+.envelope-stage__bowl-header {
+  max-width: 320px;
+}
+
+.envelope-stage__bowl-kicker {
+  letter-spacing: 0.14em;
+}
+
+.home-studio__row {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.home-studio__row--duo {
+  grid-template-columns: 55fr 45fr;
+}
+
+/* ── 五音+作息横向排版 ── */
+.home-studio__dojo-horizontal {
+  display: grid;
+  grid-template-columns: minmax(0, 58fr) minmax(0, 42fr);
+  gap: 14px;
+  min-height: 360px;
+}
+
+.home-studio__dojo-therapy,
+.home-studio__dojo-rhythm {
+  min-height: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 40px rgba(44, 44, 44, 0.06);
+}
+
+/* 疗音 — 轮盘左 + 三轨长条右（同一「今日疗音」板块） */
+.weather-dojo__content--therapy-unified {
+  display: block;
+}
+
+.weather-dojo__content--therapy-unified .dojo-panel--therapy {
+  margin-bottom: 0;
+}
+
+.dojo-therapy-body {
+  display: grid;
+  grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
+  gap: 14px 16px;
+  align-items: start;
+  margin-bottom: 12px;
+}
+
+.dojo-therapy-body__left {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.dojo-therapy-body__sigil {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-left: 12px;
+}
+
+.dojo-therapy-body__sigil .dojo-tone-sigil {
+  margin-inline: auto;
+}
+
+.dojo-therapy-body__right {
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dojo-therapy-body__right .dojo-tracks-bars {
+  height: 100%;
+}
+
+.weather-dojo__content--therapy-unified .dojo-wuyin-details {
+  margin-top: 0;
+}
+
+/* 五音音柱 — 竖线纺锤光晕（原版图示） */
+.dojo-tone-sigil {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 220px);
+  padding: 14px 16px 12px;
+  border-radius: 22px;
+  overflow: hidden;
+  background:
+    linear-gradient(165deg, rgba(232, 240, 228, 0.96) 0%, rgba(214, 228, 210, 0.9) 100%);
+  border: 1px solid rgba(130, 178, 155, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.dojo-tone-sigil::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.dojo-tone-sigil__title {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 10px;
+  font-family: var(--tcm-font-serif);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #2d5244;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.dojo-tone-sigil__stage {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 168px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dojo-tone-sigil__glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 58px;
+  height: 128px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 48% 50% at 50% 50%,
+    color-mix(in srgb, var(--sigil-tone, #de9960) 72%, white) 0%,
+    color-mix(in srgb, var(--sigil-glow, rgba(222, 153, 96, 0.55)) 85%, transparent) 42%,
+    transparent 72%
+  );
+  filter: blur(10px);
+  opacity: 0.92;
+}
+
+.dojo-tone-sigil__line {
+  position: absolute;
+  left: 50%;
+  top: 6%;
+  bottom: 6%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.55),
+    0 0 24px rgba(255, 255, 255, 0.2);
+  border-radius: 1px;
+}
+
+.dojo-tone-sigil__char {
+  position: relative;
+  z-index: 2;
+  font-family: var(--tcm-font-serif);
+  font-size: 2.75rem;
+  font-weight: 500;
+  line-height: 1;
+  color: #ffffff;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35),
+    0 2px 16px rgba(45, 82, 68, 0.18);
+}
+
+.dojo-tone-sigil__meta {
+  position: relative;
+  z-index: 1;
+  margin: 8px 0 0;
+  max-width: 100%;
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--dojo-text-soft, #5a7268);
+}
+
+.dojo-tone-sigil__element {
+  color: #9a6b12;
+}
+
+.dojo-tone-sigil--compact {
+  width: min(100%, 188px);
+  padding: 10px 12px 10px;
+  border-radius: 18px;
+}
+
+.dojo-tone-sigil--compact .dojo-tone-sigil__title {
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.dojo-tone-sigil--compact .dojo-tone-sigil__stage {
+  height: 132px;
+}
+
+.dojo-tone-sigil--compact .dojo-tone-sigil__glow {
+  width: 48px;
+  height: 108px;
+}
+
+.dojo-tone-sigil--compact .dojo-tone-sigil__char {
+  font-size: 2.25rem;
+}
+
+.dojo-tone-sigil--compact .dojo-tone-sigil__meta {
+  font-size: 10px;
+  text-align: center;
+}
+
+/* 今日情绪 — 单行居中（首页疗音） */
+.dojo-mood-bar--inline .dojo-mood-bar__scroll {
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  overflow-x: auto;
+  padding: 2px 0 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dojo-mood-bar--inline .dojo-mood-bar__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.dojo-mood-bar--inline .dojo-mood-bubble {
+  flex-shrink: 0;
+  padding: 6px 9px;
+  min-width: 0;
+}
+
+.dojo-mood-bar--inline .dojo-mood-bubble span:last-child {
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.dojo-mood-bar--inline .tcm-float-1,
+.dojo-mood-bar--inline .tcm-float-2,
+.dojo-mood-bar--inline .tcm-float-3,
+.dojo-mood-bar--inline .tcm-float-4,
+.dojo-mood-bar--inline .tcm-float-5 {
+  animation: none;
+}
+
+.dojo-tone-sigil--pulse .dojo-tone-sigil__glow {
+  animation: dojo-sigil-pulse 1.2s ease-out;
+}
+
+@keyframes dojo-sigil-pulse {
+  0% {
+    opacity: 0.55;
+    transform: translate(-50%, -50%) scale(0.88);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+  100% {
+    opacity: 0.92;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* 紧凑轮盘 — 固定宽高比，避免 height:100% 塌缩导致字重叠 */
+.dojo-wheel-wrap--compact {
+  width: min(100%, 168px);
+  height: auto;
+  aspect-ratio: 1;
+  margin-inline: 0;
+}
+
+.dojo-wheel-wrap--compact .dojo-wheel-stage {
+  padding: 6px;
+}
+
+.dojo-wheel-wrap--compact .dojo-wheel-stage::before {
+  width: min(100%, 180px);
+  height: min(100%, 180px);
+}
+
+.dojo-wheel-wrap--compact .dojo-wheel-label {
+  font-size: 1.35rem;
+}
+
+.dojo-wheel-wrap--compact .dojo-wheel-hub__meta {
+  font-size: 9px;
+  line-height: 1.25;
+  max-width: 72%;
+}
+
+.dojo-wheel-wrap--compact + p {
+  max-width: 168px;
+  margin-inline: 0;
+  text-align: left;
+}
+
+.weather-dojo .dojo-panel--wheel .dojo-wheel-wrap--compact + p {
+  text-align: left;
+}
+
+/* 三轨 — 右侧小长条 */
+.dojo-tracks-bars__label {
+  margin-bottom: 8px;
+}
+
+.dojo-tracks-bars__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dojo-track-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  min-height: 52px;
+}
+
+.dojo-track-bar__emoji {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.dojo-track-bar__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.dojo-track-bar__title {
+  line-height: 1.3;
+}
+
+.dojo-track-bar__desc {
+  margin-top: 1px;
+  line-height: 1.25;
+}
+
+.dojo-track-bar__time {
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+.dojo-track-bar .dojo-play-btn {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.dojo-track-bar--active {
+  border-color: color-mix(in srgb, var(--tcm-amber) 45%, transparent);
+}
+
+.dojo-track-bar--playing {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--tcm-amber) 35%, transparent);
+}
+
+.dojo-tracks-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
+
+.dojo-tracks-grid > p {
+  grid-column: 1 / -1;
+}
+
+.dojo-tracks-grid .dojo-track {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 10px;
+}
+
+.dojo-tracks-grid .dojo-track .flex {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.dojo-tracks-grid .dojo-track p.text-sm {
+  font-size: 12px;
+}
+
+.dojo-tracks-grid .dojo-track .line-clamp-2 {
+  -webkit-line-clamp: 3;
+}
+
+.dojo-panel--tracks-horizontal .dojo-wuyin-details {
+  margin-bottom: 10px;
+}
+
+/* ── 通用卡片 ── */
+.home-card {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 40px rgba(44, 44, 44, 0.06);
+}
+
+.home-card > * {
+  height: 100%;
+  min-height: 0;
+}
+
+.home-card--hero {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.home-studio__hero-card.home-card {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 40px rgba(44, 44, 44, 0.06);
+  overflow: hidden;
+}
+
+.home-card--panel {
+  min-height: 168px;
+}
+
+.home-card--panel:first-child {
+  min-height: 210px;
+}
+
+.home-card--panel:last-child {
+  min-height: 148px;
+}
+
+.home-card--panel .home-chronicle-panel {
+  height: 100%;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 14px 16px;
+}
+
+/* ── 天气横条（紧凑）── */
+.home-card--weather-strip {
+  min-height: 0;
+  border-radius: 20px;
+}
+
+.home-card--weather-strip .weather-hero-card {
+  border-radius: inherit;
+  border: none;
+  box-shadow: none;
+  padding: 16px 20px;
+}
+
+.home-card .home-chronicle-panel__title {
+  font-size: 0.9375rem;
+}
+
+.app-sidebar__panel {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* 天气卡片（嵌于 hero 右栏，非横条） */
+.home-card--weather-strip {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .home-studio__hero-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .home-studio__hero-envelope {
+    display: flex;
+    justify-content: center;
+  }
+
+  .envelope-stage--bowl {
+    align-items: center;
+    width: 100%;
+  }
+
+  .envelope-stage--bowl .envelope-stage__inner {
+    align-items: center;
+  }
+
+  .envelope-stage--bowl .envelope-stage__figure {
+    margin-inline: auto;
+  }
+
+  .dojo-therapy-body {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .dojo-tone-sigil--compact {
+    width: min(100%, 220px);
+    margin-inline: auto;
+  }
+
+  .dojo-tone-sigil--compact .dojo-tone-sigil__meta {
+    text-align: center;
+  }
+
+  .dojo-wheel-wrap--compact + p {
+    max-width: none;
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  .weather-dojo .dojo-panel--wheel .dojo-wheel-wrap--compact + p {
+    text-align: center;
+  }
+
+  .home-studio__dojo-horizontal,
+  .home-studio__hero-chronicle {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-card {
+    border-radius: 22px;
+  }
+}
+
+/* Chronicle motion tokens (Phase 0) */
+@keyframes weatherSunPulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50%      { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes weatherCloudDrift {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(16px); }
+}
+
+@keyframes weatherSeasonCrossfade {
+  from { opacity: 0; filter: blur(6px); transform: scale(0.98); }
+  to   { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+
+.weather-chronicle-animate-sun {
+  animation: weatherSunPulse 3s ease-in-out infinite;
+}
+
+.weather-chronicle-animate-cloud {
+  animation: weatherCloudDrift 10s ease-in-out infinite;
+}
+
+.weather-chronicle-animate-season {
+  animation: weatherSeasonCrossfade 0.8s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weather-chronicle-animate-sun,
+  .weather-chronicle-animate-cloud,
+  .weather-chronicle-animate-season {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .weather-chronicle-card {
+    padding: 0.875rem;
+    min-height: 0;
+  }
+
+  .weather-chronicle-card h2 {
+    font-size: 0.9375rem;
+  }
+}
+
+/* ───────────────────────────────────────
+   BodyWeatherScene SVG animations
+   (extracted from BodyWeatherScene.tsx — Phase 0)
+   ─────────────────────────────────────── */
+@keyframes wsSceneEnter {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.ws-sun-glow {
+  animation: wsGlowPulse 3s ease-in-out infinite;
+  transform-origin: 200px 50px;
+}
+.ws-sun-ray {
+  animation: wsRayFade 2.5s ease-in-out infinite;
+  transform-origin: 200px 48px;
+}
+.ws-light-beam-1 {
+  animation: wsBeamDrift 6s ease-in-out infinite;
+}
+.ws-light-beam-2 {
+  animation: wsBeamDrift 8s ease-in-out 2s infinite;
+}
+
+@keyframes wsGlowPulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50%      { transform: scale(1.1); opacity: 1; }
+}
+@keyframes wsRayFade {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%      { opacity: 0.65; transform: scale(1.06); }
+}
+@keyframes wsBeamDrift {
+  0%, 100% { transform: translateX(0); opacity: 0.1; }
+  50%      { transform: translateX(30px); opacity: 0.2; }
+}
+
+.ws-sun-pc {
+  animation: wsSunPcPulse 4s ease-in-out infinite;
+  transform-origin: 85px 35px;
+}
+.ws-sun-pc-glow {
+  animation: wsSunPcGlow 4s ease-in-out infinite;
+  transform-origin: 85px 35px;
+}
+.ws-cloud-drift-1 { animation: wsDrift 8s ease-in-out infinite; }
+.ws-cloud-drift-2 { animation: wsDrift 13s ease-in-out infinite reverse; }
+.ws-cloud-drift-3 { animation: wsDrift 18s ease-in-out infinite; }
+
+@keyframes wsSunPcPulse {
+  0%, 100% { opacity: 0.65; }
+  50%      { opacity: 0.85; }
+}
+@keyframes wsSunPcGlow {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50%      { opacity: 0.2; transform: scale(1.15); }
+}
+@keyframes wsDrift {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(18px); }
+}
+
+.ws-rain-1 { animation: wsRainFall 0.5s linear infinite; }
+.ws-rain-2 { animation: wsRainFall 0.65s linear infinite; }
+.ws-rain-3 { animation: wsRainFall 0.85s linear infinite; }
+.ws-rain-4 { animation: wsRainFall 1.1s linear infinite; }
+.ws-rain-5 { animation: wsRainFall 1.4s linear infinite; }
+
+@keyframes wsRainFall {
+  0%   { transform: translateY(0); opacity: 0.32; }
+  70%  { transform: translateY(38px); opacity: 0.12; }
+  100% { transform: translateY(54px); opacity: 0; }
+}
+
+.ws-fog-breathe {
+  animation: wsFogBreathe 5s ease-in-out infinite;
+}
+.ws-fog-drift-1 { animation: wsFogDrift 10s ease-in-out infinite; }
+.ws-fog-drift-2 { animation: wsFogDrift 14s ease-in-out 3s infinite; }
+.ws-fog-drift-3 { animation: wsFogDrift 18s ease-in-out 6s infinite; }
+
+@keyframes wsFogBreathe {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.12; }
+}
+@keyframes wsFogDrift {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(12px); }
+}
+
+.ws-overcast-drift-1 { animation: wsOcDrift 20s ease-in-out infinite; }
+.ws-overcast-drift-2 { animation: wsOcDrift 26s ease-in-out 3s infinite reverse; }
+.ws-overcast-drift-3 { animation: wsOcDrift 32s ease-in-out 7s infinite; }
+.ws-overcast-drift-4 { animation: wsOcDrift 24s ease-in-out 10s infinite reverse; }
+
+@keyframes wsOcDrift {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(10px); }
+}
+
+.ws-rainbow-arc {
+  animation: wsArcFadeIn 1.2s ease-out forwards;
+}
+.ws-rainbow-sun {
+  animation: wsFadeIn 1s ease-out 0.7s both;
+}
+.ws-rainbow-glow {
+  animation: wsGlowPulse 3.5s ease-in-out 1.2s infinite;
+}
+.ws-sparkle {
+  animation: wsSparkle 1.5s ease-out forwards;
+}
+
+@keyframes wsArcFadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 0.65; transform: translateY(0); }
+}
+@keyframes wsFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 0.7; }
+}
+@keyframes wsSparkle {
+  0%   { opacity: 0; transform: scale(0.5) translateY(0); }
+  30%  { opacity: 0.5; transform: scale(1) translateY(-2px); }
+  100% { opacity: 0; transform: scale(0.8) translateY(-6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ws-sun-glow, .ws-sun-ray, .ws-light-beam-1, .ws-light-beam-2,
+  .ws-sun-pc, .ws-sun-pc-glow,
+  .ws-cloud-drift-1, .ws-cloud-drift-2, .ws-cloud-drift-3,
+  .ws-rain-1, .ws-rain-2, .ws-rain-3, .ws-rain-4, .ws-rain-5,
+  .ws-fog-breathe, .ws-fog-drift-1, .ws-fog-drift-2, .ws-fog-drift-3,
+  .ws-overcast-drift-1, .ws-overcast-drift-2, .ws-overcast-drift-3, .ws-overcast-drift-4,
+  .ws-rainbow-arc, .ws-rainbow-sun, .ws-rainbow-glow, .ws-sparkle {
+    animation: none !important;
+  }
+}
+
+/* ───────────────────────────────────────
    Dark Amber Micro-Theme (Wuyin + Circadian)
    Scoped under .wellness-section-v3
    ─────────────────────────────────────── */
@@ -206,6 +2172,500 @@
   background: linear-gradient(to bottom, rgba(250, 248, 244, 0.85), transparent);
   pointer-events: none;
   z-index: 11;
+}
+
+/* ── Weather Dojo (Phase 2 — homepage; Phase 8 card layout) ── */
+.weather-dojo {
+  position: relative;
+  min-height: 280px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    165deg,
+    var(--weather-sky-clear-from) 0%,
+    var(--weather-sky-clear-to) 100%
+  );
+  color: var(--weather-text);
+  overflow: hidden;
+  box-shadow: var(--weather-card-shadow);
+  border: 1px solid var(--weather-card-border);
+  --dojo-panel-bg: #fffcf8;
+  --dojo-panel-bg-alt: #ffffff;
+  --dojo-panel-border: rgba(74, 107, 138, 0.18);
+  --dojo-text: #1f2937;
+  --dojo-text-soft: #4b5563;
+  --dojo-kicker: #3d5a73;
+}
+
+/* 首页道场 — 双板块网格 */
+.wellness-dojo-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.wellness-dojo-grid--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.home-v3 .row-body .wellness-dojo-grid {
+  min-height: min(48vh, 600px);
+}
+
+.home-card--dojo .weather-dojo {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100%;
+  min-height: 0;
+  margin-top: 0;
+}
+
+.home-card--dojo .weather-dojo__inner {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  padding: 16px 16px 20px;
+  gap: 12px;
+}
+
+.home-card--dojo .weather-dojo__inner::-webkit-scrollbar {
+  width: 6px;
+}
+
+.home-card--dojo .weather-dojo__inner::-webkit-scrollbar-thumb {
+  background: rgba(107, 140, 174, 0.35);
+  border-radius: 999px;
+}
+
+.home-v3 .row-body .wellness-dojo-grid .weather-dojo {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100%;
+  min-height: min(44vh, 560px);
+  margin-top: 0;
+}
+
+.home-v3 .row-body .wellness-dojo-grid .weather-dojo__inner {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  padding: 18px 18px 22px;
+  gap: 14px;
+}
+
+@media (max-width: 1023px) {
+  .wellness-dojo-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 首页道场 — 拉高可用区域，不与上方板块重叠 */
+.home-v3 .row-body .weather-dojo {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: auto;
+  min-height: min(48vh, 600px);
+  margin-top: 0;
+}
+
+.home-v3 .row-body .weather-dojo__inner {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: min(44vh, 560px);
+  max-height: none;
+  padding: 20px 20px 24px;
+  gap: 16px;
+}
+
+/* Remap --tcm-* for child dojo components (logic unchanged, skin only) */
+.weather-dojo.weather-chronicle {
+  --tcm-bg: transparent;
+  --tcm-surface: var(--dojo-panel-bg-alt);
+  --tcm-surface-2: #f3f0ea;
+  --tcm-border: var(--dojo-panel-border);
+  --tcm-text: var(--dojo-text);
+  --tcm-muted: var(--dojo-text-soft);
+  --tcm-amber: #b8860b;
+  --tcm-amber-glow: rgba(184, 134, 11, 0.22);
+  --tcm-gold: var(--weather-sun);
+  --tcm-deep-blue: var(--weather-rain);
+  --tcm-wood: var(--weather-leaf);
+  --tcm-fire: #c46a52;
+  --tcm-earth: var(--weather-amber);
+  --tcm-metal: #f5f0e8;
+  --tcm-water: var(--weather-rain);
+  --tcm-teal-subtle: rgba(99, 173, 150, 0.14);
+  --tcm-coral-subtle: rgba(196, 106, 82, 0.12);
+  --tcm-glass-bg: var(--dojo-panel-bg-alt);
+  --tcm-glass-border: var(--dojo-panel-border);
+  --tcm-glass-blur: 0;
+  --tcm-font-serif: var(--font-sans);
+}
+
+.weather-dojo__inner {
+  position: relative;
+  padding: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(100vh - 280px);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(107, 140, 174, 0.35) transparent;
+  -ms-overflow-style: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.home-v3 .row-body .weather-dojo__inner::-webkit-scrollbar {
+  width: 6px;
+}
+
+.home-v3 .row-body .weather-dojo__inner::-webkit-scrollbar-thumb {
+  background: rgba(107, 140, 174, 0.35);
+  border-radius: 999px;
+}
+
+.weather-dojo__inner::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.weather-dojo__bridge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: linear-gradient(
+    to bottom,
+    rgba(253, 251, 247, 0.9),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 11;
+}
+
+.weather-scene-bg {
+  z-index: 0;
+}
+
+.weather-dojo__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.weather-dojo--rhythm .weather-dojo__inner {
+  background: linear-gradient(
+    165deg,
+    rgba(232, 244, 253, 0.45) 0%,
+    rgba(255, 252, 247, 0.92) 100%
+  );
+}
+
+.dojo-board-header {
+  flex-shrink: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: #fffcf8;
+  border: 1px solid rgba(74, 107, 138, 0.12);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.weather-scene-bg__scene {
+  position: absolute;
+  inset: -4% 0 0;
+  opacity: 0.32;
+}
+
+.weather-dojo .weather-scene-bg__scene {
+  opacity: 0.12;
+}
+
+.weather-scene-bg__scene > div {
+  height: 140%;
+  min-height: 100%;
+}
+
+.weather-scene-bg__scene > div > div {
+  opacity: 1 !important;
+  border-radius: inherit;
+}
+
+.weather-scene-bg__wash {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(232, 244, 253, 0.35) 0%,
+    rgba(255, 255, 255, 0.15) 45%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+}
+
+.weather-dojo .weather-scene-bg__wash {
+  background: linear-gradient(
+    180deg,
+    rgba(232, 244, 253, 0.15) 0%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+}
+
+.weather-scene-bg__frost {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(
+    ellipse 50% 42% at 50% 34%,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.88) 70%,
+    rgba(0, 0, 0, 1) 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 50% 42% at 50% 34%,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.88) 70%,
+    rgba(0, 0, 0, 1) 100%
+  );
+}
+
+.weather-dojo .weather-scene-bg__frost {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.weather-scene-bg__edge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -1px 0 rgba(107, 140, 174, 0.08);
+  pointer-events: none;
+}
+
+.weather-dojo .dojo-streak-badge {
+  color: #2f6f5c;
+  background: rgba(99, 173, 150, 0.14);
+  border-color: rgba(99, 173, 150, 0.28);
+}
+
+/* Phase 8 — card panels on homepage dojo */
+.dojo-panel {
+  position: relative;
+  z-index: 10;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--dojo-panel-bg);
+  border: 1px solid var(--dojo-panel-border);
+  box-shadow: 0 2px 10px rgba(31, 41, 55, 0.06);
+  color: var(--dojo-text);
+}
+
+.weather-dojo .dojo-panel .tcm-glass,
+.weather-dojo .dojo-panel:not(.dojo-panel--tracks) .tcm-paper {
+  background: var(--tcm-surface-2);
+  border: 1px solid rgba(74, 107, 138, 0.12);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+/* p2 — 处方三轨：还原半透明玻璃卡片，外层不设实底 */
+.weather-dojo .dojo-panel--tracks {
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.weather-dojo .dojo-panel--tracks .dojo-track,
+.weather-dojo .dojo-panel--tracks .dojo-track.tcm-paper {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 4px,
+      rgba(45, 82, 68, 0.02) 4px,
+      rgba(45, 82, 68, 0.02) 5px
+    ),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.32));
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: none;
+}
+
+/* p1 — 轮盘区：晨雾音珠 + 五音色字（替代墨色 hub） */
+.weather-dojo .dojo-panel--wheel .dojo-wheel-stage--chronicle::before {
+  opacity: 0.45;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--wheel-tone, #de9960) 12%, white) 0%,
+    rgba(255, 255, 255, 0.22) 48%,
+    transparent 72%
+  );
+}
+
+.weather-dojo .dojo-panel--wheel .dojo-wheel-pearl {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 36%;
+  height: 36%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  z-index: 18;
+  background: radial-gradient(
+    circle at 32% 26%,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 252, 247, 0.94) 45%,
+    rgba(248, 242, 232, 0.9) 100%
+  );
+  border: 2px solid color-mix(in srgb, var(--wheel-tone, #de9960) 42%, white);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.92),
+    0 0 28px color-mix(in srgb, var(--wheel-glow, rgba(222, 153, 96, 0.35)) 55%, transparent),
+    0 4px 16px rgba(107, 140, 174, 0.12),
+    inset 0 2px 8px rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.weather-dojo .dojo-panel--wheel .dojo-wheel-disc {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 6px 22px rgba(107, 140, 174, 0.14);
+}
+
+.weather-dojo .dojo-panel--wheel .dojo-wheel-disc--seams {
+  background: repeating-conic-gradient(
+    from -90deg,
+    transparent 0deg 71.2deg,
+    rgba(107, 140, 174, 0.14) 71.2deg 72deg
+  ) !important;
+}
+
+.weather-dojo .dojo-panel--wheel .dojo-wheel-spectrum {
+  opacity: 0.62;
+}
+
+.weather-dojo .dojo-panel--wheel .dojo-breath-cue__track {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(74, 107, 138, 0.16);
+}
+
+.weather-dojo .dojo-panel--wheel .dojo-breath-cue__step {
+  color: var(--dojo-text-soft);
+  font-weight: 500;
+}
+
+.weather-dojo .dojo-panel--wheel .dojo-wheel-label {
+  color: var(--wheel-tone-ink, #9a5628);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+  font-weight: 700;
+}
+
+.weather-dojo .dojo-panel--wheel .dojo-wheel-hub__meta {
+  color: var(--dojo-text-soft);
+  text-shadow: none;
+  font-weight: 500;
+}
+
+.weather-dojo .dojo-panel--wheel .dojo-wheel-wrap + p {
+  color: var(--dojo-text);
+  font-weight: 500;
+}
+
+.weather-dojo .dojo-panel--wheel .dojo-wheel-wrap + p .text-\[var\(--tcm-amber\)\] {
+  color: #9a6b12;
+}
+
+.weather-dojo .dojo-panel .dojo-circadian.tcm-glass {
+  padding: 0;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.weather-dojo .dojo-panel--circadian {
+  background: #fffcf8;
+  isolation: isolate;
+}
+
+.weather-dojo .dojo-circadian {
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.dojo-circadian__title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--dojo-text, #1f2937);
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.weather-dojo .dojo-header-kicker {
+  color: var(--dojo-kicker);
+}
+
+.weather-dojo .dojo-header-title {
+  color: var(--dojo-text);
+}
+
+.weather-dojo .dojo-mood-bubble {
+  background: var(--dojo-panel-bg-alt);
+  border-color: rgba(74, 107, 138, 0.2);
+  color: var(--dojo-text);
+}
+
+.weather-dojo .dojo-mood-bar > p {
+  color: var(--dojo-text-soft);
+  font-weight: 500;
+}
+
+.weather-dojo .tcm-glass,
+.weather-dojo .dojo-panel:not(.dojo-panel--tracks) .tcm-paper {
+  background: var(--tcm-glass-bg);
+  border-color: var(--tcm-glass-border);
+}
+
+.weather-dojo .dojo-panel--tracks .dojo-track--idle-fade {
+  opacity: 0.68;
+}
+
+.weather-dojo .dojo-practice-entry {
+  background: #fff9f3;
+  border: 1px solid rgba(184, 134, 11, 0.22);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.weather-dojo .dojo-practice-entry__ring {
+  border-color: rgba(99, 173, 150, 0.55);
 }
 
 .dojo-header-kicker {
@@ -1595,12 +4055,14 @@
 
 /* ── Phase 6: 移动端道场布局 ── */
 @media (max-width: 640px) {
-  .wellness-dojo__inner {
+  .wellness-dojo__inner,
+  .weather-dojo__inner {
     padding: 14px 12px 18px;
     max-height: none;
   }
 
-  .wellness-dojo__bridge {
+  .wellness-dojo__bridge,
+  .weather-dojo__bridge {
     height: 20px;
   }
 
@@ -1666,7 +4128,8 @@
     letter-spacing: 0.28em;
   }
 
-  .dojo-guofeng-bg__frost {
+  .dojo-guofeng-bg__frost,
+  .weather-scene-bg__frost {
     backdrop-filter: blur(18px) saturate(1.1);
     -webkit-backdrop-filter: blur(18px) saturate(1.1);
   }
@@ -1676,20 +4139,24 @@
   animation: tcm-rotate-wheel 8s linear infinite;
 }
 
-/* Dojo 内折叠区适配深色 */
-.wellness-dojo .text-\[var\(--color-muted\)\] {
+/* Dojo 内折叠区适配 */
+.wellness-dojo .text-\[var\(--color-muted\)\],
+.weather-dojo .text-\[var\(--color-muted\)\] {
   color: var(--tcm-muted);
 }
 
-.wellness-dojo .text-\[var\(--color-coral\)\] {
+.wellness-dojo .text-\[var\(--color-coral\)\],
+.weather-dojo .text-\[var\(--color-coral\)\] {
   color: var(--tcm-amber);
 }
 
-.wellness-dojo .border-\[var\(--color-border\)\] {
+.wellness-dojo .border-\[var\(--color-border\)\],
+.weather-dojo .border-\[var\(--color-border\)\] {
   border-color: var(--tcm-border);
 }
 
-.wellness-dojo .bg-\[var\(--color-surface-2\)\] {
+.wellness-dojo .bg-\[var\(--color-surface-2\)\],
+.weather-dojo .bg-\[var\(--color-surface-2\)\] {
   background: var(--tcm-surface-2);
 }
 

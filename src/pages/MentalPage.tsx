@@ -1,6 +1,7 @@
 import { useAppStore } from '../store/useAppStore'
 import { Card } from '../components/ui/Card'
 import { DirectionScoreCard } from '../components/health/DirectionScoreCard'
+import { WatchMetricAppendix } from '../components/health/WatchMetricAppendix'
 
 export function MentalPage() {
   const voiceLogs = useAppStore((s) => s.voiceLogs)
@@ -23,7 +24,7 @@ export function MentalPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold">心理健康</h2>
+      <h2 className="text-xl font-semibold">心理与情绪</h2>
       {(mood || burnout || brainFog) && (
         <div className="grid gap-3 md:grid-cols-3">
           {mood && <DirectionScoreCard score={mood} />}
@@ -42,7 +43,7 @@ export function MentalPage() {
           <p className="text-3xl font-semibold">{voiceLogs.length}</p>
         </Card>
         <Card>
-          <p className="text-sm text-[var(--color-muted)]">相关预警</p>
+          <p className="text-sm text-[var(--color-muted)]">相关提醒</p>
           <p className="text-3xl font-semibold">{alerts.length}</p>
         </Card>
       </div>
@@ -62,7 +63,7 @@ export function MentalPage() {
       </Card>
       {alerts.length > 0 && (
         <Card>
-          <h3 className="mb-3 font-medium">心理相关预警</h3>
+          <h3 className="mb-3 font-medium">心理相关提醒</h3>
           {alerts.map((a) => (
             <div key={a.id} className="mb-2 text-sm">
               <p className="font-medium">{a.title}</p>
@@ -71,6 +72,8 @@ export function MentalPage() {
           ))}
         </Card>
       )}
+
+      <WatchMetricAppendix domain="mental" />
     </div>
   )
 }

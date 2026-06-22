@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { LetterCard } from './LetterCard'
 import { Mailbox } from '../illustrations/Mailbox'
 import { PostmarkStamp } from '../illustrations/PostmarkStamp'
+import { LetterReplyInput } from './LetterReplyInput'
+import { LetterHistory } from './LetterHistory'
 import { getDisplayWeeklyScore } from '../../lib/weeklyScore'
 import type { WeeklyLetterData } from '../../services/weeklyLetter'
 import { isLlmAvailable } from '../../config/llm'
@@ -41,6 +43,7 @@ export function LetterRevealOverlay({
   onRegenerate,
 }: Props) {
   const [phase, setAnimPhase] = useState<AnimPhase>('entering')
+  const [replyRefresh, setReplyRefresh] = useState(0)
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([])
   const llmAvailable = isLlmAvailable()
   const score = getDisplayWeeklyScore(letter)
@@ -329,6 +332,12 @@ export function LetterRevealOverlay({
                     </span>
                   )}
                 </div>
+
+                <LetterReplyInput
+                  dateRange={letter.dateRange}
+                  onSaved={() => setReplyRefresh((v) => v + 1)}
+                />
+                <LetterHistory currentDateRange={letter.dateRange} refreshKey={replyRefresh} />
               </LetterCard>
             )}
           </div>

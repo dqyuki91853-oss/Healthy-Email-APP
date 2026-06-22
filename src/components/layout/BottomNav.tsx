@@ -1,10 +1,10 @@
 import { NavLink } from 'react-router-dom'
-import { Home, Mic, BarChart2, Settings } from 'lucide-react'
+import { Home, Mic, Settings, Gem } from 'lucide-react'
 
 const tabs = [
   { to: '/', label: '首页', icon: Home },
   { to: '/voice-log', label: '记录', icon: Mic },
-  { to: '/dashboard', label: '数据', icon: BarChart2 },
+  { to: '/collection', label: '珍藏', icon: Gem },
   { to: '/settings', label: '设置', icon: Settings },
 ]
 

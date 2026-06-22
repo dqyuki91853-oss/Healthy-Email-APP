@@ -9,7 +9,7 @@ const MOOD_CONTEXT: Record<MoodTag, string> = {
   anxiety: '心里有点急，徵音配慢呼吸，像把胸腔的结松开一点。',
   low_mood: '情绪偏沉，商音配长呼气，不追求响，追求稳。',
   irritable: '肩上有劲，角音短哼几轮，像把劲轻轻放下来。',
-  calm: '今天情绪平稳，跟着宫音稳一稳就好。',
+  calm: '今天情绪平稳，跟着羽音慢慢沉静就好。',
 }
 
 /** Weather-specific add-on (appended to mood context) */

@@ -1,11 +1,14 @@
+import type { CSSProperties } from 'react'
 import type { WuyinToneId } from '../../../types/tcm'
 import { WUYIN_TONES } from '../../../config/wuyinToneMap'
-import { tangAlpha } from '../../../config/tangPalette'
-import { TONE_WHEEL_SEGMENTS, toneLabelColor, toneRotationDeg } from './toneWheelConfig'
+import { tangAlpha, TANG } from '../../../config/tangPalette'
+import { TONE_WHEEL_SEGMENTS, toneInkOnLight, toneRotationDeg } from './toneWheelConfig'
 
 interface Props {
   toneId: WuyinToneId
   animating?: boolean
+  /** 首页横向布局 — 缩小轮盘，避免字体重叠 */
+  compact?: boolean
 }
 
 const INACTIVE_OPACITY = 0.52
@@ -21,16 +24,27 @@ function buildConicGradient(activeId: WuyinToneId): string {
   return `conic-gradient(from -90deg, ${stops.join(', ')})`
 }
 
-export function WuyinToneWheel({ toneId, animating }: Props) {
+export function WuyinToneWheel({ toneId, animating, compact = false }: Props) {
   const tone = WUYIN_TONES[toneId]
   const rotation = toneRotationDeg(toneId)
   const activeSeg = TONE_WHEEL_SEGMENTS.find((s) => s.toneId === toneId)
-  const labelColor = toneLabelColor(toneId)
+  const labelColor = toneInkOnLight(toneId)
+  const wheelTone = activeSeg?.color ?? TANG.earth
+  const wheelGlow = activeSeg?.glow ?? 'rgba(222,153,96,0.35)'
 
   return (
-    <div className="relative mx-auto flex flex-col items-center">
-      <div className="dojo-wheel-stage">
-        <div className="dojo-wheel-wrap relative">
+    <div className={`relative flex flex-col ${compact ? 'items-start' : 'mx-auto items-center'}`}>
+      <div className="dojo-wheel-stage dojo-wheel-stage--chronicle">
+        <div
+          className={`dojo-wheel-wrap relative${compact ? ' dojo-wheel-wrap--compact' : ''}`}
+          style={
+            {
+              '--wheel-tone': wheelTone,
+              '--wheel-glow': wheelGlow,
+              '--wheel-tone-ink': labelColor,
+            } as CSSProperties
+          }
+        >
         {/* Phase 2A：频谱光晕 */}
         <div
           className={`dojo-wheel-spectrum ${animating ? 'dojo-wheel-spectrum--pulse' : ''}`}
@@ -58,15 +72,15 @@ export function WuyinToneWheel({ toneId, animating }: Props) {
           <div className="dojo-wheel-disc dojo-wheel-disc--seams" aria-hidden />
         </div>
 
-        {/* 中心 hub */}
-        <div className="dojo-wheel-hub" aria-hidden />
+        {/* 中心音珠 — 首页浅色玻璃，非墨色 hub */}
+        <div className="dojo-wheel-pearl" aria-hidden />
 
         <div
-          className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center text-center"
+          className="dojo-wheel-center pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center text-center"
           aria-label={`五音轮盘，当前 ${tone.label}音`}
         >
           <span
-            className="text-[1.65rem] font-semibold leading-none"
+            className="dojo-wheel-label text-[1.65rem] font-semibold leading-none"
             style={{ fontFamily: 'var(--tcm-font-serif)', color: labelColor }}
           >
             {tone.label}
@@ -78,7 +92,7 @@ export function WuyinToneWheel({ toneId, animating }: Props) {
       </div>
       </div>
 
-      <p className="mt-2 max-w-[240px] text-center text-[11px] leading-relaxed text-[var(--tcm-muted)]">
+      <p className={`mt-2 max-w-[240px] text-[11px] leading-relaxed text-[var(--tcm-muted)] ${compact ? 'text-left' : 'text-center'}`}>
         {tone.emotionLabel} → {tone.label}音
         {activeSeg && (
           <span className="text-[var(--tcm-amber)]"> · {activeSeg.element}</span>

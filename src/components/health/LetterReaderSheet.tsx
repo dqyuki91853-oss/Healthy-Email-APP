@@ -1,7 +1,9 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { LetterCard } from './LetterCard'
 import { Mailbox } from '../illustrations/Mailbox'
+import { LetterReplyInput } from './LetterReplyInput'
+import { LetterHistory } from './LetterHistory'
 import { getDisplayWeeklyScore } from '../../lib/weeklyScore'
 import type { WeeklyLetterData } from '../../services/weeklyLetter'
 import { isLlmAvailable } from '../../config/llm'
@@ -33,6 +35,7 @@ export function LetterReaderSheet({
   stale,
   onRegenerate,
 }: Props) {
+  const [replyRefresh, setReplyRefresh] = useState(0)
   const overlayRef = useRef<HTMLDivElement>(null)
   const llmAvailable = isLlmAvailable()
   const score = getDisplayWeeklyScore(letter)
@@ -217,6 +220,12 @@ export function LetterReaderSheet({
                   </span>
                 )}
               </div>
+
+              <LetterReplyInput
+                dateRange={letter.dateRange}
+                onSaved={() => setReplyRefresh((v) => v + 1)}
+              />
+              <LetterHistory currentDateRange={letter.dateRange} refreshKey={replyRefresh} />
             </LetterCard>
           )}
         </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
 import { Card } from '../components/ui/Card'
 import { PageHeader } from '../components/layout/PageHeader'
@@ -13,6 +14,8 @@ import { parseHealthCsv } from '../lib/health-import/csvParser'
 import { Sparkles, CheckCircle, Trash2, Upload, Download } from 'lucide-react'
 import { buildSubhealthExport, parseSubhealthExport } from '../lib/dataSync'
 import { getAllHistoryPatterns } from '../services/dietHistory'
+import { loadBloodPressureReadings, importBloodPressureReadings } from '../lib/bloodPressureStore'
+import { parseBloodPressureCsv } from '../lib/health-import/bloodPressureCsvParser'
 import { isTauri } from '../lib/platform'
 import {
   clearListeningReminderSuppress,
@@ -20,6 +23,15 @@ import {
   saveWuyinListeningPrefs,
   WUYIN_GATE_LEAD_DEFAULT_MIN,
 } from '../lib/wuyinListeningPrefs'
+import {
+  formatChronicleMorningTime,
+  getChronicleNotificationPrefs,
+  saveChronicleNotificationPrefs,
+  CHRONICLE_MORNING_DEFAULT_HOUR,
+  CHRONICLE_MORNING_DEFAULT_MINUTE,
+} from '../lib/chronicleNotificationPrefs'
+import { setAdvancedModeEnabled, useAdvancedMode } from '../hooks/useAdvancedMode'
+import { requestChronicleNotificationResync } from '../services/chronicleNotifications'
 
 const STREAMING_THRESHOLD = 50 * 1024 * 1024
 
@@ -29,13 +41,15 @@ function isJsonSyncFile(file: File): boolean {
 }
 
 export function SettingsPage() {
-  const { profile, setProfile, watchRows, voiceLogs, clearAllData, importWatchData, importSyncedData } =
+  const { profile, setProfile, watchRows, voiceLogs, clearAllData, importWatchData, importSyncedData, loadDemoWellnessSeed } =
     useAppStore()
   const [importStatus, setImportStatus] = useState<string | null>(null)
   const [importError, setImportError] = useState<string | null>(null)
   const [importLoading, setImportLoading] = useState(false)
   const [importProgress, setImportProgress] = useState<number | null>(null)
   const [syncStatus, setSyncStatus] = useState<string | null>(null)
+  const [demoLoading, setDemoLoading] = useState(false)
+  const [demoStatus, setDemoStatus] = useState<string | null>(null)
   const [syncError, setSyncError] = useState<string | null>(null)
   const [syncLoading, setSyncLoading] = useState(false)
   const [includeWatchOnSync, setIncludeWatchOnSync] = useState(false)
@@ -52,6 +66,15 @@ export function SettingsPage() {
   const [wuyinNativeNotify, setWuyinNativeNotify] = useState(true)
   const [wuyinGateLeadMin, setWuyinGateLeadMin] = useState(WUYIN_GATE_LEAD_DEFAULT_MIN)
   const [wuyinPrefsSaved, setWuyinPrefsSaved] = useState(false)
+  const [chronicleNotifyEnabled, setChronicleNotifyEnabled] = useState(true)
+  const [chronicleNativeNotify, setChronicleNativeNotify] = useState(true)
+  const [chronicleMorningHour, setChronicleMorningHour] = useState(CHRONICLE_MORNING_DEFAULT_HOUR)
+  const [chronicleMorningMinute, setChronicleMorningMinute] = useState(CHRONICLE_MORNING_DEFAULT_MINUTE)
+  const [chroniclePrefsSaved, setChroniclePrefsSaved] = useState(false)
+  const advancedMode = useAdvancedMode()
+  const [bpImportStatus, setBpImportStatus] = useState<string | null>(null)
+  const [bpImportError, setBpImportError] = useState<string | null>(null)
+  const [bpImportLoading, setBpImportLoading] = useState(false)
 
   useEffect(() => {
     getFollowUpSettings().then((s) => {
@@ -68,6 +91,11 @@ export function SettingsPage() {
     setWuyinReminderEnabled(wuyinPrefs.enabled)
     setWuyinNativeNotify(wuyinPrefs.nativeNotify)
     setWuyinGateLeadMin(wuyinPrefs.gateLeadMin)
+    const chroniclePrefs = getChronicleNotificationPrefs()
+    setChronicleNotifyEnabled(chroniclePrefs.enabled)
+    setChronicleNativeNotify(chroniclePrefs.nativeNotify)
+    setChronicleMorningHour(chroniclePrefs.hour)
+    setChronicleMorningMinute(chroniclePrefs.minute)
   }, [])
 
   const saveWuyinPrefs = (patch: Parameters<typeof saveWuyinListeningPrefs>[0]) => {
@@ -79,17 +107,31 @@ export function SettingsPage() {
     window.setTimeout(() => setWuyinPrefsSaved(false), 2000)
   }
 
+  const saveChroniclePrefs = (patch: Parameters<typeof saveChronicleNotificationPrefs>[0]) => {
+    const next = saveChronicleNotificationPrefs(patch)
+    setChronicleNotifyEnabled(next.enabled)
+    setChronicleNativeNotify(next.nativeNotify)
+    setChronicleMorningHour(next.hour)
+    setChronicleMorningMinute(next.minute)
+    setChroniclePrefsSaved(true)
+    requestChronicleNotificationResync()
+    window.setTimeout(() => setChroniclePrefsSaved(false), 2000)
+  }
+
   const exportJson = async () => {
     const data = buildSubhealthExport({
       voiceLogs,
       watchRows,
       dietHistory: getAllHistoryPatterns(),
+      bloodPressureReadings: loadBloodPressureReadings(),
+      profile,
+      includeLocalPrefs: true,
     })
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `subhealth-export-${new Date().toISOString().slice(0, 10)}.json`
+    a.download = `subhealth-full-backup-${new Date().toISOString().slice(0, 10)}.json`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -110,11 +152,28 @@ export function SettingsPage() {
       ]
       if (result.watchRowsImported) parts.push(`健康数据 ${result.watchRowsImported} 天`)
       if (result.dietHistoryMerged) parts.push(`饮食习惯 ${result.dietHistoryMerged} 条`)
+      if (result.bpMerged) parts.push(`血压 ${result.bpMerged} 条`)
       setSyncStatus(`已同步：${parts.join('；')}`)
     } catch (err) {
       setSyncError(err instanceof Error ? err.message : '导入失败')
     } finally {
       setSyncLoading(false)
+    }
+  }
+
+  const handleBloodPressureCsvImport = async (file: File) => {
+    setBpImportLoading(true)
+    setBpImportError(null)
+    setBpImportStatus(null)
+    try {
+      const text = await file.text()
+      const readings = parseBloodPressureCsv(text)
+      const added = importBloodPressureReadings(readings)
+      setBpImportStatus(`已导入 ${added} 条血压记录（共解析 ${readings.length} 条）`)
+    } catch (err) {
+      setBpImportError(err instanceof Error ? err.message : '导入失败')
+    } finally {
+      setBpImportLoading(false)
     }
   }
 
@@ -333,43 +392,148 @@ export function SettingsPage() {
       </Card>
 
       <Card>
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="font-medium">晨间身体天气推送</h3>
+          {chroniclePrefsSaved && (
+            <span className="flex items-center gap-1 text-xs text-[var(--color-green)]">
+              <CheckCircle size={12} /> 已保存
+            </span>
+          )}
+        </div>
+        <p className="mb-3 text-xs text-[var(--color-muted)]">
+          每日推送今日身体天气与适宜行动，例如「今早身体雾，适宜散步+宫音」。无足够健康数据时不推送。
+        </p>
+        <label className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium">启用晨推</p>
+            <p className="text-xs text-[var(--color-muted)]">关闭后不再调度晨间通知</p>
+          </div>
+          <input
+            type="checkbox"
+            className="h-5 w-5 shrink-0 rounded accent-[var(--color-teal)]"
+            checked={chronicleNotifyEnabled}
+            onChange={(e) => saveChroniclePrefs({ enabled: e.target.checked })}
+          />
+        </label>
+        {isTauri() && (
+          <label className="mt-4 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium">Mac 系统本地通知</p>
+              <p className="text-xs text-[var(--color-muted)]">在设定时刻推送；点击打开首页</p>
+            </div>
+            <input
+              type="checkbox"
+              className="h-5 w-5 shrink-0 rounded accent-[var(--color-teal)]"
+              checked={chronicleNativeNotify}
+              onChange={(e) => saveChroniclePrefs({ nativeNotify: e.target.checked })}
+            />
+          </label>
+        )}
+        <label className="mt-4 block text-sm">
+          推送时间
+          <div className="mt-1 flex items-center gap-2">
+            <input
+              type="number"
+              min={0}
+              max={23}
+              value={chronicleMorningHour}
+              onChange={(e) => setChronicleMorningHour(parseInt(e.target.value, 10) || 0)}
+              onBlur={() =>
+                saveChroniclePrefs({ hour: chronicleMorningHour, minute: chronicleMorningMinute })
+              }
+              className="w-20 rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-bg)] p-2"
+            />
+            <span>:</span>
+            <input
+              type="number"
+              min={0}
+              max={59}
+              value={chronicleMorningMinute}
+              onChange={(e) => setChronicleMorningMinute(parseInt(e.target.value, 10) || 0)}
+              onBlur={() =>
+                saveChroniclePrefs({ hour: chronicleMorningHour, minute: chronicleMorningMinute })
+              }
+              className="w-20 rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-bg)] p-2"
+            />
+          </div>
+          <span className="mt-1 block text-[11px] text-[var(--color-muted)]">
+            当前计划 {formatChronicleMorningTime(getChronicleNotificationPrefs())}
+            {!isTauri() && ' · 浏览器仅在打开应用且已过该时刻时补发一次'}
+          </span>
+        </label>
+      </Card>
+
+      <Card>
         <h3 className="mb-3 font-medium">显示偏好</h3>
         <label className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium">高级健康数据</p>
-            <p className="text-xs text-[var(--color-muted)]">显示 EvidenceBadge、ReliabilityBadge 等详细指标</p>
+            <p className="text-xs text-[var(--color-muted)]">
+              各健康页展示 Watch 22 项分域附录与 ReliabilityBadge（非首页数字墙）
+            </p>
           </div>
           <input
             type="checkbox"
             className="h-5 w-5 rounded accent-[var(--color-teal)]"
-            onChange={(e) => {
-              localStorage.setItem('subhealth_advanced_mode', String(e.target.checked))
-            }}
-            defaultChecked={localStorage.getItem('subhealth_advanced_mode') === 'true'}
+            checked={advancedMode}
+            onChange={(e) => setAdvancedModeEnabled(e.target.checked)}
           />
         </label>
+      </Card>
+
+      <Card>
+        <h3 className="mb-3 font-medium">演示数据</h3>
+        <p className="mb-3 text-sm text-[var(--color-muted)]">
+          加载近 14 天模拟 Apple Watch 指标与饮食记录，用于预览
+          <strong className="font-medium text-[var(--color-text)]"> 身体档案馆</strong> 与
+          <strong className="font-medium text-[var(--color-text)]"> 身体四季</strong>（需至少 14 天有效数据）。
+          会覆盖当前本地数据。
+        </p>
+        <Button
+          variant="secondary"
+          disabled={demoLoading}
+          onClick={async () => {
+            setDemoLoading(true)
+            setDemoStatus(null)
+            try {
+              const result = await loadDemoWellnessSeed()
+              setDemoStatus(
+                `已加载 ${result.watchDays} 天 Watch、${result.voiceLogs} 条饮食记录，发现 ${result.cases} 条案卷。返回首页查看。`,
+              )
+            } catch (e) {
+              setDemoStatus(e instanceof Error ? e.message : '加载失败')
+            } finally {
+              setDemoLoading(false)
+            }
+          }}
+        >
+          {demoLoading ? '加载中…' : '加载 14 天演示数据'}
+        </Button>
+        {demoStatus && (
+          <p className="mt-2 text-xs text-[var(--color-green)]">{demoStatus}</p>
+        )}
       </Card>
 
       <Card>
         <h3 className="mb-3 font-medium">数据同步（Web ↔ App）</h3>
         <p className="mb-3 text-sm text-[var(--color-muted)]">
           {isTauri()
-            ? '浏览器与 Mac App 数据不互通。请先在 Web 端导出 JSON，再在此导入饮食记录（文件扩展名 .json）。'
-            : '导出后可在 Mac App 设置页导入；同一文件也可在浏览器间迁移。'}
+            ? 'Mac App 启动时会自动合并 public/data/app-sync.json。也可手动导入完整备份 JSON。'
+            : '导出完整备份（饮食 + Watch + 偏好）后，Mac App 会自动同步 app-sync.json；也可手动导入。'}
         </p>
         <div className="flex flex-wrap gap-2">
           <Button variant="ghost" onClick={exportJson}>
             <Download size={14} />
-            导出 JSON
+            导出完整备份
           </Button>
         </div>
         <label className="mt-4 flex cursor-pointer flex-col items-center gap-2 rounded-[var(--radius-lg)] border-2 border-dashed border-[var(--color-teal)]/40 bg-[var(--color-teal)]/5 p-4 transition-colors hover:border-[var(--color-teal)]">
           <Upload size={24} className="text-[var(--color-teal)]" />
           <span className="text-sm font-medium">
-            {syncLoading ? '导入中…' : '选择 .json 导入饮食记录'}
+            {syncLoading ? '导入中…' : '选择完整备份 .json 导入'}
           </span>
           <span className="text-[11px] text-[var(--color-muted)]">
-            subhealth-export-*.json
+            subhealth-full-backup-*.json
           </span>
           <input
             type="file"
@@ -395,6 +559,37 @@ export function SettingsPage() {
           <p className="mt-2 text-xs text-[var(--color-green)]">{syncStatus}</p>
         )}
         {syncError && <p className="mt-2 text-xs text-[var(--color-red)]">{syncError}</p>}
+      </Card>
+
+      <Card>
+        <h3 className="mb-3 font-medium">血压 CSV 导入</h3>
+        <p className="mb-3 text-xs text-[var(--color-muted)]">
+          支持血压仪或健康 App 导出的 CSV（需含时间、收缩压、舒张压列；脉搏可选）。
+          导入后在 <Link to="/blood-pressure" className="text-[var(--color-teal)] underline">血压页</Link> 查看。
+        </p>
+        <label className="flex cursor-pointer flex-col items-center gap-2 rounded-[var(--radius-lg)] border-2 border-dashed border-[var(--color-border)] p-4 transition-colors hover:border-[var(--color-teal)]">
+          <Upload size={22} className="text-[var(--color-muted)]" />
+          <span className="text-sm">
+            {bpImportLoading ? '导入中…' : '选择血压 CSV 文件'}
+          </span>
+          <input
+            type="file"
+            accept=".csv,text/csv"
+            className="hidden"
+            disabled={bpImportLoading}
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) void handleBloodPressureCsvImport(file)
+              e.target.value = ''
+            }}
+          />
+        </label>
+        {bpImportStatus && (
+          <p className="mt-2 text-xs text-[var(--color-green)]">{bpImportStatus}</p>
+        )}
+        {bpImportError && (
+          <p className="mt-2 text-xs text-[var(--color-red)]">{bpImportError}</p>
+        )}
       </Card>
 
       <Card>

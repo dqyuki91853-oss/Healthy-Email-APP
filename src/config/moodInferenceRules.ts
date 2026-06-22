@@ -107,9 +107,9 @@ export const MOOD_INFERENCE_RULES: MoodInferenceRule[] = [
 
 /** moodTag → 默认五音，详见 wuyinToneMap.ts */
 export const MOOD_TO_WUYIN: Partial<Record<MoodTag, WuyinToneId>> = {
-  anxiety: 'zhi',
+  fatigue: 'gong',
   low_mood: 'shang',
   irritable: 'jue',
-  fatigue: 'gong',
-  fearful: 'yu',
+  anxiety: 'zhi',
+  calm: 'yu',
 }

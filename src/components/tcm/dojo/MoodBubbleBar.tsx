@@ -6,15 +6,17 @@ interface Props {
   selected: MoodTag | null
   inferred: MoodTag | null
   onSelect: (mood: MoodTag) => void
+  /** 首页疗音 — 五个表情单行居中 */
+  inline?: boolean
 }
 
-export function MoodBubbleBar({ selected, inferred, onSelect }: Props) {
+export function MoodBubbleBar({ selected, inferred, onSelect, inline = false }: Props) {
   const active = selected ?? inferred
 
   return (
-    <div className="dojo-mood-bar">
+    <div className={`dojo-mood-bar${inline ? ' dojo-mood-bar--inline' : ''}`}>
       <p className="w-full text-center text-[10px] tracking-wide text-[var(--tcm-muted)]">今日情绪</p>
-      <div className="dojo-mood-bar__scroll flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+      <div className="dojo-mood-bar__scroll flex items-center justify-center gap-2 sm:gap-3">
       {MOOD_BUBBLES.map((b, i) => {
         const isActive = active === b.mood
         return (

@@ -7,6 +7,7 @@ interface Props {
   tracks: WuyinAudioTrack[]
   activeTrackId: string | null
   onSelect: (track: WuyinAudioTrack) => void
+  orientation?: 'vertical' | 'horizontal' | 'bars'
 }
 
 const categoryMeta: Record<
@@ -44,7 +45,12 @@ interface PlaybackSnapshot {
   durationSec: number
 }
 
-export function WuyinPrescriptionWaterfall({ tracks, activeTrackId, onSelect }: Props) {
+export function WuyinPrescriptionWaterfall({
+  tracks,
+  activeTrackId,
+  onSelect,
+  orientation = 'vertical',
+}: Props) {
   const [soloTrackId, setSoloTrackId] = useState<string | null>(null)
   const [playback, setPlayback] = useState<PlaybackSnapshot | null>(null)
   const stopRef = useRef<(() => void) | null>(null)
@@ -167,10 +173,62 @@ export function WuyinPrescriptionWaterfall({ tracks, activeTrackId, onSelect }: 
     return formatTime(playback.durationSec - playback.elapsedSec)
   }
 
+  if (orientation === 'bars') {
+    return (
+      <div className="dojo-tracks-bars">
+        <p
+          className="dojo-tracks-bars__label text-xs tracking-widest text-[var(--tcm-muted)]"
+          style={{ fontFamily: 'var(--tcm-font-serif)' }}
+        >
+          今日处方 · 三轨
+        </p>
+        <div className="dojo-tracks-bars__list space-y-2">
+          {ordered.map((track) => {
+            const meta = categoryMeta[track.category]
+            const isActive = track.id === activeTrackId
+            const isPlaying = isTrackPlaying(track)
+            const isSoloPlaying = soloTrackId === track.id
+
+            return (
+              <div
+                key={track.id}
+                className={`dojo-track-bar tcm-paper tcm-ink-border ${meta.cardClass} ${isActive ? 'dojo-track-bar--active' : ''} ${isPlaying ? 'dojo-track-bar--playing' : ''}`}
+              >
+                <span className="dojo-track-bar__emoji shrink-0" aria-hidden>
+                  {meta.emoji}
+                </span>
+                <div className="dojo-track-bar__body min-w-0 flex-1">
+                  <p
+                    className="dojo-track-bar__title truncate text-xs font-medium text-[var(--tcm-text)]"
+                    style={{ fontFamily: 'var(--tcm-font-serif)' }}
+                  >
+                    {meta.label} · {track.label}
+                  </p>
+                  <p className="dojo-track-bar__desc truncate text-[10px] text-[var(--tcm-muted)]">
+                    {track.description}
+                  </p>
+                </div>
+                <span
+                  className={`dojo-track-bar__time shrink-0 text-[10px] tabular-nums ${isPlaying ? 'text-[var(--tcm-amber)]' : 'text-[var(--tcm-muted)]'}`}
+                >
+                  {isPlaying ? displayTime(track) : formatTime(track.durationSec)}
+                </span>
+                <DojoPlayButton
+                  playing={isSoloPlaying}
+                  onToggle={() => void startSolo(track)}
+                />
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-3">
+    <div className={orientation === 'horizontal' ? 'dojo-tracks-grid' : 'space-y-3'}>
       <p
-        className="text-xs tracking-widest text-[var(--tcm-muted)]"
+        className={`text-xs tracking-widest text-[var(--tcm-muted)] ${orientation === 'horizontal' ? 'col-span-full' : ''}`}
         style={{ fontFamily: 'var(--tcm-font-serif)' }}
       >
         今日处方 · 三轨

@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
 import { Card } from '../components/ui/Card'
-import { ALERT_DISCLAIMER } from '../types/alerts'
 import { EvidenceBadge } from '../components/health/EvidenceBadge'
 import { DirectionScoreCard } from '../components/health/DirectionScoreCard'
 
@@ -27,7 +26,7 @@ const DIRECTION_LABELS: Record<string, string> = {
 const METRIC_STATUS_LABEL = {
   normal: '🟢 正常',
   yellow: '🟡 关注',
-  red: '🔴 预警',
+  red: '🔴 建议关注',
   no_data: '⬜ 无数据',
 }
 
@@ -39,8 +38,10 @@ export function AlertsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold">预警中心</h2>
-        <p className="text-sm text-[var(--color-muted)]">{ALERT_DISCLAIMER}</p>
+        <h2 className="text-xl font-semibold">值得留意的信号</h2>
+        <p className="text-sm text-[var(--color-muted)]">
+          基于你的 Watch 与饮食记录的个人化提示，像编年里的脚注——供你参考，不是诊断。
+        </p>
         {prediction && (
           <p className="mt-1 text-xs text-[var(--color-muted)]">
             综合等级：{LEVEL_LABELS[prediction.overallLevel]} · 评估于{' '}
@@ -72,7 +73,7 @@ export function AlertsPage() {
 
       {directions.filter((d) => d.level !== 'green').length > 0 && (
         <div>
-          <h3 className="mb-3 font-medium">疾病方向风险</h3>
+          <h3 className="mb-3 font-medium">方向性线索</h3>
           <div className="grid gap-3 md:grid-cols-2">
             {directions
               .filter((d) => d.level !== 'green')
@@ -86,7 +87,7 @@ export function AlertsPage() {
       {alerts.length === 0 ? (
         <Card>
           <p className="text-sm text-[var(--color-muted)]">
-            暂无预警。导入 Apple Watch 数据并完成每日记录后，阈值引擎将自动生成风险提示。
+            暂无需要留意的信号。导入 Apple Watch 数据并完成每日记录后，会在这里生成温和的个人化提示。
           </p>
         </Card>
       ) : (

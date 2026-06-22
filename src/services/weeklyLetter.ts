@@ -1,10 +1,14 @@
 import type { DailyWatchRow, PersonalBaseline, UserProfile } from '../types/health'
 import type { VoiceExtraction } from '../types/voice'
+import type { BodySeasonId } from '../types/bodySeason'
+import type { BodyWeatherId } from '../types/bodyWeather'
 import { callLLMGeneral } from './llm'
 import { isLlmAvailable } from '../config/llm'
 
 import type { WellnessSnapshot } from '../types/wellness'
 import { getLetterPracticeHint, getWuyinPracticeStats } from '../lib/wuyinPracticeStreak'
+import { formatReplyHintForLetter, getLatestReply } from '../lib/bodyReplyStore'
+import { archiveWeeklyLetter } from '../lib/letterArchiveStore'
 
 export interface WeeklyLetterData {
   score: number | null
@@ -13,10 +17,14 @@ export interface WeeklyLetterData {
   dateRange: { start: string; end: string } | null
 }
 
-interface CachedLetter {
+export interface CachedLetter {
   cacheKey: string
   generatedAt: string
   data: WeeklyLetterData
+  weatherId?: BodyWeatherId | null
+  weatherLabel?: string | null
+  seasonId?: BodySeasonId | null
+  seasonLabel?: string | null
 }
 
 const CACHE_KEY = 'subhealth_weekly_letter'
@@ -53,12 +61,20 @@ export function getCachedLetter(): WeeklyLetterData | null {
   }
 }
 
-export function setCachedLetter(cacheKey: string, data: WeeklyLetterData): void {
+export function setCachedLetter(
+  cacheKey: string,
+  data: WeeklyLetterData,
+  wellness?: WellnessSnapshot | null,
+): void {
   try {
     const entry: CachedLetter = {
       cacheKey,
       generatedAt: new Date().toISOString(),
       data,
+      weatherId: wellness?.bodyWeather?.weatherId ?? null,
+      weatherLabel: wellness?.bodyWeather?.label ?? null,
+      seasonId: wellness?.bodySeason?.seasonId ?? null,
+      seasonLabel: wellness?.bodySeason?.label ?? null,
     }
     localStorage.setItem(CACHE_KEY, JSON.stringify(entry))
   } catch {
@@ -137,6 +153,17 @@ function pick<T>(arr: T[]): T | undefined {
   return arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : undefined
 }
 
+function buildReplyAcknowledgment(): string | null {
+  const latest = getLatestReply()
+  if (!latest) return null
+  const lines = [
+    '读到了你上次的留言——谢谢愿意跟我分享。',
+    '你上次的回信我记在心里了，这周继续一起留意身体。',
+    '谢谢你上次的回信，我会把你的心意带进这周的提醒里。',
+  ]
+  return pick(lines) ?? lines[0]
+}
+
 /** Data summary for LLM input only — never shown in UI */
 function buildWeeklyDataSummary(
   watchRows: DailyWatchRow[],
@@ -198,6 +225,7 @@ const SYSTEM_PROMPT = `你是健康来信助手。根据用户 7 天数据写一
 
 严禁：证据等级、阈值、HRV%、临床术语、数据表格、批评恐吓
 语气：像朋友写信，鼓励为主
+若提供「用户上一封回信」，请自然回应一两句，不要生硬引用原文
 
 输出纯 JSON：{"score":82,"letter":"亲爱的小伙伴：\\n\\n……"}`
 
@@ -287,6 +315,8 @@ function buildFallbackLetter(
 
   const compliment = pick(compliments) ?? '这周坚持关注自己的健康，很棒'
 
+  const replyAck = buildReplyAcknowledgment()
+
   const lines = [
     '亲爱的小伙伴：',
     '',
@@ -298,6 +328,7 @@ function buildFallbackLetter(
     '',
     `特别想夸夸你：${compliment}。`,
     '',
+    ...(replyAck ? [replyAck, ''] : []),
     '祝你新的一周元气满满。',
     '你的健康小助手',
   ].filter((l) => l !== '')
@@ -320,10 +351,19 @@ export async function generateWeeklyLetterAndCache(
   profile: UserProfile,
   wellness?: WellnessSnapshot | null,
 ): Promise<WeeklyLetterData> {
+  const previous = getCachedEntry()
   const data = await generateWeeklyLetter(watchRows, voiceLogs, baselines, profile, wellness)
   if (data.letter) {
+    if (previous?.data.letter && previous.data.dateRange) {
+      archiveWeeklyLetter(previous.data, {
+        weatherId: previous.weatherId,
+        weatherLabel: previous.weatherLabel,
+        seasonId: previous.seasonId,
+        seasonLabel: previous.seasonLabel,
+      })
+    }
     const cacheKey = buildCacheKey(watchRows, voiceLogs, profile)
-    setCachedLetter(cacheKey, data)
+    setCachedLetter(cacheKey, data, wellness)
   }
   return data
 }
@@ -357,7 +397,10 @@ export async function generateWeeklyLetter(
     ? `\n【可选表扬】若语气自然，可在信中轻轻提及：${practiceHint}`
     : ''
 
-  const userPrompt = `${summary}${weatherHint}${practiceHintLine}\n\n请根据以上数据生成本周健康来信。`
+  const replyHint = formatReplyHintForLetter()
+  const replyHintLine = replyHint ? `\n【${replyHint}】` : ''
+
+  const userPrompt = `${summary}${weatherHint}${practiceHintLine}${replyHintLine}\n\n请根据以上数据生成本周健康来信。`
 
   try {
     const raw = await callLLMGeneral(SYSTEM_PROMPT, userPrompt, {

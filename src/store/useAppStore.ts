@@ -8,6 +8,7 @@ import { computeBaselines } from '../lib/baselines'
 import { normalizeWatchRow } from '../lib/health-import/watchRow'
 import { buildPredictionSnapshot, runPredictionEngine } from '../engine/predictor'
 import { clearDietHistory } from '../services/dietHistory'
+import { clearBloodPressureReadings, mergeBloodPressureReadings } from '../lib/bloodPressureStore'
 
 import type { WellnessSnapshot } from '../types/wellness'
 import type { WeeklyLetterData } from '../services/weeklyLetter'
@@ -17,6 +18,10 @@ import {
   type SubhealthExportV1,
   type ImportSyncResult,
 } from '../lib/dataSync'
+import { buildDemoWellnessSeed, DEMO_SEED_ID } from '../lib/demoWellnessSeed'
+import { saveCaseFiles } from '../lib/caseFileStore'
+import { maybeImportAppSync } from '../lib/appSyncImport'
+import { restoreLocalPrefs, APP_SYNC_PATH, parseSubhealthExport } from '../lib/dataSync'
 
 interface AppState {
   watchRows: DailyWatchRow[]
@@ -40,6 +45,7 @@ interface AppState {
   setPrivacyAccepted: (v: boolean) => Promise<void>
   setProfile: (p: Partial<UserProfile>) => Promise<void>
   clearAllData: () => Promise<void>
+  loadDemoWellnessSeed: () => Promise<{ watchDays: number; voiceLogs: number; cases: number }>
   importSyncedData: (
     payload: SubhealthExportV1,
     options?: { includeWatchRows?: boolean },
@@ -104,20 +110,36 @@ export const useAppStore = create<AppState>((set, get) => ({
     } catch {
       /* no seed file */
     }
-    const [watchRows, voiceLogs, settings, profileRow] = await Promise.all([
+
+    await maybeImportAppSync((payload, opts) => get().importSyncedData(payload, opts))
+
+    let voiceCount = await db.voiceLogs.count()
+    if (voiceCount === 0) {
+      try {
+        const res = await fetch(APP_SYNC_PATH)
+        if (res.ok) {
+          const payload = parseSubhealthExport(await res.json())
+          await get().importSyncedData(payload, { includeWatchRows: true })
+        }
+      } catch {
+        /* no app-sync */
+      }
+    }
+
+    const [watchRowsFinal, voiceLogsFinal, settingsFinal, profileRowFinal] = await Promise.all([
       getWatchData(365),
       getAllVoiceLogs(),
       db.settings.get('default'),
       db.profile.get('default'),
     ])
-    const baselines = computeBaselines(watchRows)
+    const baselines = computeBaselines(watchRowsFinal)
     await db.baselines.bulkPut(baselines)
     set({
-      watchRows,
+      watchRows: watchRowsFinal,
       baselines,
-      voiceLogs,
-      privacyAccepted: settings?.privacyAccepted ?? false,
-      profile: profileRow ?? {},
+      voiceLogs: voiceLogsFinal,
+      privacyAccepted: settingsFinal?.privacyAccepted ?? false,
+      profile: profileRowFinal ?? {},
       loading: false,
     })
     get().refreshAlerts()
@@ -179,6 +201,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   clearAllData: async () => {
     await clearAllData()
     clearDietHistory()
+    clearBloodPressureReadings()
+    saveCaseFiles([])
+    localStorage.removeItem('subhealth_chronicle_prefs')
     set({
       watchRows: [],
       baselines: [],
@@ -189,6 +214,45 @@ export const useAppStore = create<AppState>((set, get) => ({
       privacyAccepted: false,
       wellness: null,
     })
+  },
+
+  loadDemoWellnessSeed: async () => {
+    const demo = buildDemoWellnessSeed()
+    await clearAllData()
+    clearDietHistory()
+    clearBloodPressureReadings()
+    saveCaseFiles([])
+    localStorage.removeItem('subhealth_chronicle_prefs')
+    localStorage.removeItem('subhealth_last_seen_letter_v3')
+
+    await saveWatchData(demo.watchRows.map((r) => normalizeWatchRow(r)))
+    await importVoiceLogs(demo.voiceLogs)
+    mergeDietHistory(demo.dietHistory)
+    localStorage.setItem('subhealth_seed_id', DEMO_SEED_ID)
+
+    await db.profile.put({
+      id: 'default',
+      age: 32,
+      sex: 'female',
+    })
+
+    const watchRows = await getWatchData(365)
+    const voiceLogs = await getAllVoiceLogs()
+    const baselines = computeBaselines(watchRows)
+    await db.baselines.bulkPut(baselines)
+
+    set({
+      watchRows,
+      baselines,
+      voiceLogs,
+      profile: { age: 32, sex: 'female' },
+      weeklyLetterStale: true,
+      weeklyLetter: null,
+    })
+    get().refreshAlerts()
+
+    const cases = get().wellness?.caseFiles?.length ?? 0
+    return { watchDays: watchRows.length, voiceLogs: voiceLogs.length, cases }
   },
 
   importSyncedData: async (payload, options = {}) => {
@@ -205,6 +269,14 @@ export const useAppStore = create<AppState>((set, get) => ({
       ? mergeDietHistory(payload.dietHistory)
       : 0
 
+    const bpMerged = payload.bloodPressureReadings?.length
+      ? mergeBloodPressureReadings(payload.bloodPressureReadings)
+      : 0
+
+    if (payload.profile && Object.keys(payload.profile).length > 0) {
+      await db.profile.put({ id: 'default', ...payload.profile })
+    }
+
     const watchRows = await getWatchData(includeWatchRows ? 365 : 365)
     const voiceLogs = await getAllVoiceLogs()
     const baselines = computeBaselines(watchRows)
@@ -218,11 +290,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     })
     get().refreshAlerts()
 
+    const prefsRestored = restoreLocalPrefs(payload.localPrefs)
+
     return {
       voiceLogsAdded: added,
       voiceLogsUpdated: updated,
       watchRowsImported,
       dietHistoryMerged,
+      bpMerged,
+      prefsRestored,
     }
   },
 

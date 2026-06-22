@@ -21,10 +21,11 @@ export const TONE_WHEEL_SEGMENTS: ToneWheelSegment[] = [
   { toneId: 'yu', label: '羽', element: '水', color: TANG.water, glow: 'rgba(67,108,133,0.65)' },
 ]
 
+/** 宫 → 商 → 角 → 徵 → 羽，与五音一一对应 */
 export const MOOD_BUBBLES: Array<{ mood: MoodTag; emoji: string; label: string }> = [
+  { mood: 'fatigue', emoji: '😴', label: '疲惫' },
   { mood: 'low_mood', emoji: '😔', label: '低落' },
   { mood: 'irritable', emoji: '😣', label: '烦躁' },
-  { mood: 'fatigue', emoji: '😴', label: '疲惫' },
   { mood: 'anxiety', emoji: '😰', label: '焦虑' },
   { mood: 'calm', emoji: '😌', label: '平静' },
 ]
@@ -35,9 +36,21 @@ export function toneRotationDeg(activeToneId: WuyinToneId): number {
   return -idx * 72
 }
 
-/** 轮盘中心五音字 — 统一白色，衬于深色 hub */
+/** 轮盘中心五音字 — 统一白色，衬于深色 hub（练习页） */
 export function toneLabelColor(_toneId: WuyinToneId): string {
   return '#FFFFFF'
+}
+
+/** 首页浅色音珠 — 五音字用对应深色，保证可读 */
+export function toneInkOnLight(toneId: WuyinToneId): string {
+  const ink: Record<WuyinToneId, string> = {
+    gong: '#9a5628',
+    shang: '#7a6f4a',
+    jue: '#3d6b56',
+    zhi: '#963032',
+    yu: '#2f5570',
+  }
+  return ink[toneId] ?? '#1f2937'
 }
 
 /** 背景光晕随当前五音微调（Phase 6 crossfade） */

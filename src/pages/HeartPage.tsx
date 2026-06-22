@@ -7,6 +7,7 @@ import { EvidenceBadge } from '../components/health/EvidenceBadge'
 import { CHART_REFERENCE_LINES } from '../config/thresholds'
 import { getBaseline } from '../lib/baselines'
 import { DirectionScoreCard } from '../components/health/DirectionScoreCard'
+import { WatchMetricAppendix } from '../components/health/WatchMetricAppendix'
 
 export function HeartPage() {
   const { watchRows, baselines, prediction } = useAppStore()
@@ -109,6 +110,8 @@ export function HeartPage() {
           <p className="mt-2 text-xs text-[var(--color-yellow)]">AW 低氧区精度有限，警报时建议临床血氧计核对</p>
         </Card>
       </div>
+
+      <WatchMetricAppendix domain="heart" />
     </div>
   )
 }

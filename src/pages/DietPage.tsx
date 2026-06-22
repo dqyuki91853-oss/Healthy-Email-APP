@@ -1,10 +1,17 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
 import { Card } from '../components/ui/Card'
 import { DateTracker } from '../components/ui/DateTracker'
 import { DietLogItem } from '../components/diet/DietLogItem'
 import { DirectionScoreCard } from '../components/health/DirectionScoreCard'
+import { FoodFingerprintCard } from '../components/bloodPressure/FoodFingerprintCard'
 import { getRecordDate, todayStr, weekRange } from '../lib/dates'
+import {
+  computeFoodFingerprints,
+  hasBloodPressureData,
+  loadBloodPressureReadings,
+} from '../lib/bloodPressureStore'
 
 const CATEGORIES = [
   { key: 'purine', label: '嘌呤来源', color: '#de7b64' },
@@ -51,6 +58,11 @@ export function DietPage() {
       })
     })
   })
+
+  const foodFingerprints = useMemo(() => {
+    if (!hasBloodPressureData()) return []
+    return computeFoodFingerprints(voiceLogs, loadBloodPressureReadings())
+  }, [voiceLogs])
 
   const handleDelete = async (id: string) => {
     setDeletingId(id)
@@ -127,6 +139,18 @@ export function DietPage() {
           ))}
         </div>
       </Card>
+
+      {foodFingerprints.length > 0 && (
+        <Card>
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="font-medium">食物指纹</h3>
+            <Link to="/blood-pressure" className="text-xs text-[var(--color-teal)] underline">
+              血压详情
+            </Link>
+          </div>
+          <FoodFingerprintCard fingerprints={foodFingerprints} compact />
+        </Card>
+      )}
 
       <Card>
         <h3 className="mb-3 font-medium">饮食记录明细</h3>

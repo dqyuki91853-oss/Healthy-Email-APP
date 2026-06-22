@@ -1,4 +1,5 @@
 import { useAppStore } from '../store/useAppStore'
+import { Link } from 'react-router-dom'
 import { Card } from '../components/ui/Card'
 import { TimeSeriesChart } from '../components/charts/TimeSeriesChart'
 import { STEPS_THRESHOLDS, VO2_THRESHOLDS } from '../config/thresholds'
@@ -6,6 +7,7 @@ import { EvidenceBadge } from '../components/health/EvidenceBadge'
 import { CHART_REFERENCE_LINES } from '../config/thresholds'
 import { ReliabilityBadge } from '../components/health/ReliabilityBadge'
 import { DirectionScoreCard } from '../components/health/DirectionScoreCard'
+import { WatchMetricAppendix } from '../components/health/WatchMetricAppendix'
 
 export function MetabolicPage() {
   const watchRows = useAppStore((s) => s.watchRows)
@@ -18,7 +20,12 @@ export function MetabolicPage() {
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">代谢健康</h2>
-      <p className="text-sm text-[var(--color-muted)]">综合代谢综合征、NAFLD、尿酸相关代理指标与饮食模式</p>
+      <p className="text-sm text-[var(--color-muted)]">
+        综合代谢综合征、NAFLD、尿酸相关代理指标与饮食模式。
+        <Link to="/blood-pressure" className="ml-1 text-[var(--color-teal)] underline">
+          血压与食物反应 →
+        </Link>
+      </p>
 
       {(metabolic || nafld || gout) && (
         <div className="grid gap-3 md:grid-cols-3">
@@ -76,6 +83,8 @@ export function MetabolicPage() {
           ))}
         </Card>
       </div>
+
+      <WatchMetricAppendix domain="metabolic" />
     </div>
   )
 }

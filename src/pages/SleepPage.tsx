@@ -5,6 +5,7 @@ import { ReliabilityBadge } from '../components/health/ReliabilityBadge'
 import { SLEEP_THRESHOLDS, CHART_REFERENCE_LINES } from '../config/thresholds'
 import { EvidenceBadge } from '../components/health/EvidenceBadge'
 import { computeDerived } from '../lib/health-import/xmlParser'
+import { WatchMetricAppendix } from '../components/health/WatchMetricAppendix'
 import { DirectionScoreCard } from '../components/health/DirectionScoreCard'
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 
@@ -90,6 +91,8 @@ export function SleepPage() {
           ))}
         </div>
       </Card>
+
+      <WatchMetricAppendix domain="sleep" />
     </div>
   )
 }

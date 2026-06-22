@@ -8,12 +8,19 @@ import {
   todayDateStr,
 } from '../lib/wellnessSignals'
 import { computeBodyWeather } from './bodyWeather'
+import { computeDailyBrief } from './dailyBrief'
+import { computeInnerClimate } from './innerClimate'
 import { computeMoodInference } from './moodInference'
 import { computeWuyinPrescription } from './wuyinPrescription'
 import { computePersonalCircadian } from './tcmCircadian'
 import { computeWuyinListeningWindow } from './wuyinListeningWindow'
+import { discoverPatterns } from './patternDiscovery'
+import { computeBodySeason } from './bodySeason'
 import { practicedWuyinToday } from '../lib/wuyinPracticeStreak'
 import { getWuyinListeningPrefs } from '../lib/wuyinListeningPrefs'
+import { loadCaseFiles, saveCaseFiles, visibleCaseFiles } from '../lib/caseFileStore'
+import { loadChroniclePrefs, persistBodySeason } from '../lib/chroniclePrefs'
+import { loadBloodPressureReadings } from '../lib/bloodPressureStore'
 
 export function buildWellnessSnapshot(
   rows: DailyWatchRow[],
@@ -36,6 +43,36 @@ export function buildWellnessSnapshot(
     practicedToday: practicedWuyinToday(),
     gateLeadMin: listeningPrefs.gateLeadMin,
   })
+  const bpReadings = loadBloodPressureReadings()
+  const innerClimate = computeInnerClimate(signals, voiceLogs, bpReadings)
+  const dailyBrief = computeDailyBrief(
+    signals,
+    bodyWeather,
+    innerClimate,
+    mood,
+    wuyin,
+    circadian,
+    rows,
+    baselines,
+    voiceLogs,
+    bpReadings,
+  )
+
+  const existingCases = loadCaseFiles()
+  const discovery = discoverPatterns(rows, voiceLogs, existingCases, targetDate)
+  if (discovery.newCases.length > 0) {
+    saveCaseFiles(discovery.activeCases)
+  }
+  const caseFiles = visibleCaseFiles(discovery.activeCases)
+
+  const chroniclePrefs = loadChroniclePrefs()
+  const bodySeason = computeBodySeason(rows, baselines, chroniclePrefs.seasonId, targetDate, {
+    wuyinLabel: wuyin?.label ?? null,
+    sleepGate: circadian.personalSleepGate,
+  })
+  if (bodySeason) {
+    persistBodySeason(bodySeason)
+  }
 
   return {
     date: targetDate,
@@ -44,5 +81,9 @@ export function buildWellnessSnapshot(
     wuyin,
     circadian,
     listeningWindow,
+    innerClimate,
+    dailyBrief,
+    caseFiles,
+    bodySeason,
   }
 }

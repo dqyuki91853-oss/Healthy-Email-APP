@@ -5,26 +5,29 @@ import { TopNav } from './TopNav'
 import { BottomNav } from './BottomNav'
 import { DojoListeningToastHost } from '../home/DojoListeningToastHost'
 import { WuyinNotificationBridge } from '../app/WuyinNotificationBridge'
+import { ChronicleNotificationBridge } from '../app/ChronicleNotificationBridge'
 
 export function AppLayout() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex min-h-screen">
+    <div className="app-layout flex min-h-screen bg-[var(--color-bg)]">
       <WuyinNotificationBridge />
+      <ChronicleNotificationBridge />
       <DojoListeningToastHost />
-      {/* ── Desktop Left Sidebar (280px) ── */}
-      <LeftSidebar />
 
-      {/* ── Main Content Area ── */}
-      <div className="flex flex-1 flex-col bg-[var(--color-bg)]">
-        {/* Desktop TopNav */}
-        <div className="px-8 pt-6 lg:block hidden">
+      {/* ── 20/80 布局：左侧日历+饮食 (20%) / 右侧主内容 (80%) ── */}
+      <div className="hidden lg:flex lg:w-[20%] lg:shrink-0">
+        <LeftSidebar />
+      </div>
+
+      {/* ── Main Content Area (80%) ── */}
+      <div className="app-shell flex flex-1 flex-col lg:w-[80%] lg:flex-none">
+        <div className="hidden px-6 pt-5 lg:block">
           <TopNav />
         </div>
 
-        {/* Page content */}
-        <main className="app-main-scroll flex-1 overflow-auto px-4 pb-24 pt-4 lg:px-8 lg:pb-8 lg:pt-0">
+        <main className="app-main-scroll flex-1 overflow-auto px-4 pb-24 pt-4 lg:px-6 lg:pb-8 lg:pt-2">
           <Outlet />
         </main>
       </div>

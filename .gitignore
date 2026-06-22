@@ -25,3 +25,7 @@ dist-ssr
 
 # Bundled CC0 wuyin tracks (fetch via scripts/fetch_wuyin_audio.py)
 public/audio/wuyin/open-lofi/*.mp3
+
+# Local Mac app build artifacts
+release/
+src-tauri/target/
