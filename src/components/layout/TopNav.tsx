@@ -1,12 +1,13 @@
 import { NavLink } from 'react-router-dom'
-import { Home, Mic, BarChart2, Settings, Gem, Flower2 } from 'lucide-react'
+import { Home, Mic, Settings, Gem, Flower2, HeartPulse, UtensilsCrossed } from 'lucide-react'
 
 const TABS = [
   { to: '/', label: '首页', icon: Home },
   { to: '/voice-log', label: '记录', icon: Mic },
   { to: '/collection', label: '珍藏', icon: Gem },
+  { to: '/bp-advisory', label: '血压', icon: HeartPulse },
   { to: '/seasons', label: '四季', icon: Flower2 },
-  { to: '/dashboard', label: '数据', icon: BarChart2 },
+  { to: '/diet', label: '饮食分析', icon: UtensilsCrossed },
   { to: '/settings', label: '设置', icon: Settings },
 ]
 

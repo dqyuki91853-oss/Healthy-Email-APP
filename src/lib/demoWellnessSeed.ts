@@ -1,5 +1,6 @@
 import { emptyWatchRow } from './health-import/watchRow'
 import type { DailyWatchRow } from '../types/health'
+import type { BloodPressureReading } from '../types/bloodPressure'
 import type { VoiceExtraction, FoodEntry } from '../types/voice'
 import type { DietHistoryPattern } from '../services/dietHistory'
 import type { SubhealthExportV1 } from './dataSync'
@@ -150,6 +151,51 @@ export function buildDemoVoiceLogs(): VoiceExtraction[] {
   return logs
 }
 
+/** 14 天晨/晚血压演示数据 + 偶数日晚餐后反应读数 */
+export function buildDemoBloodPressureReadings(): BloodPressureReading[] {
+  const readings: BloodPressureReading[] = []
+
+  for (let i = 13; i >= 0; i--) {
+    const date = offsetDate(i)
+    const dayIndex = 13 - i
+    const lateDinnerDay = dayIndex % 2 === 0
+
+    readings.push({
+      id: `demo-bp-am-${date}`,
+      measuredAt: mealTimestamp(date, 8, 30),
+      systolicMmHg: 118 + (dayIndex % 3),
+      diastolicMmHg: 74 + (dayIndex % 2),
+      pulseBpm: 72,
+      source: 'device',
+      deviceModel: 'demo-omron',
+    })
+
+    readings.push({
+      id: `demo-bp-pm-${date}`,
+      measuredAt: mealTimestamp(date, lateDinnerDay ? 21 : 19, 30),
+      systolicMmHg: 115 + (dayIndex % 2),
+      diastolicMmHg: 73 + (dayIndex % 2),
+      pulseBpm: 70,
+      source: 'device',
+      deviceModel: 'demo-omron',
+    })
+
+    if (lateDinnerDay) {
+      readings.push({
+        id: `demo-bp-post-${date}`,
+        measuredAt: mealTimestamp(date, 21, 50),
+        systolicMmHg: 132 + (dayIndex % 4),
+        diastolicMmHg: 82 + (dayIndex % 2),
+        pulseBpm: 78,
+        source: 'device',
+        deviceModel: 'demo-omron',
+      })
+    }
+  }
+
+  return readings
+}
+
 export function buildDemoDietHistory(): DietHistoryPattern[] {
   const today = offsetDate(0)
   return [
@@ -167,6 +213,7 @@ export interface DemoWellnessSeed {
   watchRows: DailyWatchRow[]
   voiceLogs: VoiceExtraction[]
   dietHistory: DietHistoryPattern[]
+  bloodPressureReadings: BloodPressureReading[]
   exportPayload: SubhealthExportV1
 }
 
@@ -174,18 +221,21 @@ export function buildDemoWellnessSeed(): DemoWellnessSeed {
   const watchRows = buildDemoWatchRows()
   const voiceLogs = buildDemoVoiceLogs()
   const dietHistory = buildDemoDietHistory()
+  const bloodPressureReadings = buildDemoBloodPressureReadings()
 
   return {
     seedId: DEMO_SEED_ID,
     watchRows,
     voiceLogs,
     dietHistory,
+    bloodPressureReadings,
     exportPayload: {
       version: 1,
       exportedAt: new Date().toISOString(),
       watchRows,
       voiceLogs,
       dietHistory,
+      bloodPressureReadings,
       profile: { age: 32, sex: 'female' },
     },
   }

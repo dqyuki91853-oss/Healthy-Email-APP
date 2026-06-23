@@ -1,4 +1,5 @@
 import type { ConfidenceLevel } from '../types/bodyWeather'
+import type { BpAdvisory } from '../types/bpAdvisory'
 import type { InnerClimateSnapshot, InnerClimateState } from '../types/innerClimate'
 import type { BloodPressureReading } from '../types/bloodPressure'
 import type { VoiceExtraction } from '../types/voice'
@@ -109,6 +110,7 @@ export function computeInnerClimate(
   signals: WellnessSignals,
   voiceLogs: VoiceExtraction[],
   bpReadings: BloodPressureReading[] = [],
+  bpAdvisory?: BpAdvisory | null,
 ): InnerClimateSnapshot {
   const dayLogs = voiceLogsForDate(voiceLogs, signals.date)
   const hasHeavyDinner = dayLogs.some(isHeavyEveningMeal)
@@ -148,11 +150,26 @@ export function computeInnerClimate(
   const bpRipple =
     bpApplied.bpInformed && bpApplied.matchedRuleId === 'IC-bp-ripple-01'
 
+  if (
+    bpAdvisory?.fusionHints.bodyWeatherRipple &&
+    state === 'steady' &&
+    bpAdvisory.weatherLevel !== 'crisis'
+  ) {
+    state = 'ripple'
+    matchedRuleId = 'IC-bp-advisory-01'
+  }
+
+  const advisoryRipple = matchedRuleId === 'IC-bp-advisory-01'
+
   return {
     date: signals.date,
     state,
     label: STATE_LABELS[state],
-    hint: bpApplied.customHint ?? buildHint(state, hasHeavyDinner, hasActivityRipple, bpRipple),
+    hint:
+      bpApplied.customHint ??
+      (advisoryRipple
+        ? '最近血压波动偏明显，今晚宜清淡、早睡'
+        : buildHint(state, hasHeavyDinner, hasActivityRipple, bpRipple)),
     confidence: buildConfidence(signalCount, hasSteps, hasDiet),
     matchedRuleId,
     bpInformed: bpApplied.bpInformed,

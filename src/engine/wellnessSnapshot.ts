@@ -21,6 +21,7 @@ import { getWuyinListeningPrefs } from '../lib/wuyinListeningPrefs'
 import { loadCaseFiles, saveCaseFiles, visibleCaseFiles } from '../lib/caseFileStore'
 import { loadChroniclePrefs, persistBodySeason } from '../lib/chroniclePrefs'
 import { loadBloodPressureReadings } from '../lib/bloodPressureStore'
+import { computeBpAdvisory } from './bpAdvisory'
 
 export function buildWellnessSnapshot(
   rows: DailyWatchRow[],
@@ -44,7 +45,8 @@ export function buildWellnessSnapshot(
     gateLeadMin: listeningPrefs.gateLeadMin,
   })
   const bpReadings = loadBloodPressureReadings()
-  const innerClimate = computeInnerClimate(signals, voiceLogs, bpReadings)
+  const bpAdvisory = computeBpAdvisory(bpReadings, voiceLogs, rows, targetDate)
+  const innerClimate = computeInnerClimate(signals, voiceLogs, bpReadings, bpAdvisory)
   const dailyBrief = computeDailyBrief(
     signals,
     bodyWeather,
@@ -56,6 +58,7 @@ export function buildWellnessSnapshot(
     baselines,
     voiceLogs,
     bpReadings,
+    bpAdvisory,
   )
 
   const existingCases = loadCaseFiles()
@@ -69,6 +72,7 @@ export function buildWellnessSnapshot(
   const bodySeason = computeBodySeason(rows, baselines, chroniclePrefs.seasonId, targetDate, {
     wuyinLabel: wuyin?.label ?? null,
     sleepGate: circadian.personalSleepGate,
+    bpAdvisory,
   })
   if (bodySeason) {
     persistBodySeason(bodySeason)
@@ -85,5 +89,6 @@ export function buildWellnessSnapshot(
     dailyBrief,
     caseFiles,
     bodySeason,
+    bpAdvisory,
   }
 }

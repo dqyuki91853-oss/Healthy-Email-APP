@@ -8,6 +8,7 @@ import type {
 } from '../types/dailyBrief'
 import type { InnerClimateSnapshot } from '../types/innerClimate'
 import type { BloodPressureReading } from '../types/bloodPressure'
+import type { BpAdvisory } from '../types/bpAdvisory'
 import type { DailyWatchRow, PersonalBaseline } from '../types/health'
 import type { MoodInferenceResult } from '../types/mood'
 import type { PersonalCircadianPlan, WuyinPrescription } from '../types/tcm'
@@ -210,10 +211,16 @@ export function computeDailyBrief(
   baselines: PersonalBaseline[],
   voiceLogs: VoiceExtraction[] = [],
   bpReadings: BloodPressureReading[] = [],
+  bpAdvisory?: BpAdvisory | null,
 ): DailyWeatherBrief {
   const { level: energyLevel, label: energyLabel } = computeEnergy(signals)
   const recoveryProbability = computeRecoveryProbability(signals, bodyWeather, innerClimate)
   const recoveryPct = Math.round(recoveryProbability * 100)
+
+  let trendHint = computeTrendHint(rows, baselines, signals.date)
+  if (bpAdvisory?.clinicalEscalation.triggered) {
+    trendHint = `${trendHint}；血压读数偏高，建议尽快复测。`
+  }
 
   return {
     date: signals.date,
@@ -221,7 +228,7 @@ export function computeDailyBrief(
     energyLabel,
     recoveryProbability,
     recoveryLabel: `恢复 ${recoveryPct}%`,
-    trendHint: computeTrendHint(rows, baselines, signals.date),
+    trendHint,
     suitability: buildSuitabilityChips(
       energyLevel,
       bodyWeather,

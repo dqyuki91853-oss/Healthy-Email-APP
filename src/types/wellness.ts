@@ -1,5 +1,6 @@
 import type { BodySeasonSnapshot } from './bodySeason'
 import type { BodyWeatherSnapshot } from './bodyWeather'
+import type { BpAdvisory } from './bpAdvisory'
 import type { CaseFile } from './caseFile'
 import type { DailyWeatherBrief } from './dailyBrief'
 import type { InnerClimateSnapshot } from './innerClimate'
@@ -21,4 +22,6 @@ export interface WellnessSnapshot {
   caseFiles: CaseFile[]
   /** E3：个人生理季 */
   bodySeason: BodySeasonSnapshot | null
+  /** 血压建议摘要（独立页 + 首页融合） */
+  bpAdvisory: BpAdvisory | null
 }

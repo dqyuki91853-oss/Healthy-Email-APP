@@ -1,5 +1,9 @@
 export type BloodPressureSource = 'manual' | 'device' | 'csv'
 
+export type BpMeasurementContext = 'morning' | 'evening' | 'post_meal' | 'rest' | 'unknown'
+
+export type BpArm = 'left' | 'right'
+
 export interface BloodPressureReading {
   id: string
   /** ISO datetime */
@@ -13,6 +17,11 @@ export interface BloodPressureReading {
   source: BloodPressureSource
   voiceLogId?: string
   note?: string
+  /** 引擎推导的测量情境 */
+  measurementContext?: BpMeasurementContext
+  deviceModel?: string
+  arm?: BpArm
+  irregularPulseFlag?: boolean
 }
 
 export type FoodFingerprintReaction = 'mild' | 'moderate' | 'strong'

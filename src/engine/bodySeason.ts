@@ -2,6 +2,7 @@ import { getBaseline } from '../lib/baselines'
 import type { ConfidenceLevel } from '../types/bodyWeather'
 import type { DailyWatchRow, PersonalBaseline } from '../types/health'
 import type { BodySeasonId, BodySeasonSnapshot } from '../types/bodySeason'
+import type { BpAdvisory } from '../types/bpAdvisory'
 
 const EWMA_WINDOW = 14
 
@@ -74,6 +75,7 @@ function scoreSeasons(
   stepsEwma: number | null,
   rhrEwma: number | null,
   baselines: PersonalBaseline[],
+  bpAdvisory?: BpAdvisory | null,
 ): Record<BodySeasonId, number> {
   const hrvBase = getBaseline(baselines, 'hrvSdnn')
   const sleepBase = getBaseline(baselines, 'sleepHours')
@@ -105,6 +107,13 @@ function scoreSeasons(
   if (rhrEwma != null && rhrBase && rhrEwma > rhrBase.mean + 3) scores.winter += 2
   if (hrvEwma != null && hrvBase && hrvEwma < hrvBase.mean * 0.9) scores.winter += 2
   if (sleepEwma != null && sleepBase && sleepEwma < sleepBase.mean * 0.93) scores.winter += 2
+
+  if (
+    bpAdvisory?.fusionHints.seasonModifier === 'stable_bonus' &&
+    bpAdvisory.daysWithReadings7d >= 5
+  ) {
+    scores.autumn += 1
+  }
 
   return scores
 }
@@ -140,7 +149,11 @@ export function computeBodySeason(
   baselines: PersonalBaseline[],
   prevSeasonId: BodySeasonId | null,
   targetDate: string,
-  opts?: { wuyinLabel?: string | null; sleepGate?: string | null },
+  opts?: {
+    wuyinLabel?: string | null
+    sleepGate?: string | null
+    bpAdvisory?: BpAdvisory | null
+  },
 ): BodySeasonSnapshot | null {
   const sorted = [...rows].sort((a, b) => a.date.localeCompare(b.date))
   const maturityDays = sorted.length
@@ -162,7 +175,7 @@ export function computeBodySeason(
   const driftScore =
     zs.length > 0 ? clamp01(zs.reduce((s, z) => s + Math.abs(z), 0) / zs.length / 2) : 0
 
-  const scores = scoreSeasons(hrvEwma, sleepEwma, stepsEwma, rhrEwma, baselines)
+  const scores = scoreSeasons(hrvEwma, sleepEwma, stepsEwma, rhrEwma, baselines, opts?.bpAdvisory)
   const seasonId = pickSeasonId(scores, prevSeasonId)
   const copy = SEASON_COPY[seasonId]
 

@@ -21,6 +21,7 @@ import { ChroniclePage } from './pages/ChroniclePage'
 import { CollectionPage } from './pages/CollectionPage'
 import { SeasonsPage } from './pages/SeasonsPage'
 import { BloodPressurePage } from './pages/BloodPressurePage'
+import { BpAdvisoryPage } from './pages/BpAdvisoryPage'
 
 export default function App() {
   const loadData = useAppStore((s) => s.loadData)
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="chronicle" element={<Navigate to="/collection" replace />} />
           <Route path="chronicle-old" element={<ChroniclePage />} />
           <Route path="seasons" element={<SeasonsPage />} />
+          <Route path="bp-advisory" element={<BpAdvisoryPage />} />
           <Route path="blood-pressure" element={<BloodPressurePage />} />
           <Route path="glucose" element={<Navigate to="/blood-pressure" replace />} />
           <Route path="practice/wuyin" element={<WuyinPracticePage />} />
