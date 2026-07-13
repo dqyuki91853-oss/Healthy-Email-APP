@@ -51,7 +51,7 @@
 ### 隐私 · Privacy
 
 - 默认 **仅本地**（IndexedDB / localStorage）
-- 支持 JSON 导出与 Web ↔ Mac **手动同步**（`public/data/app-sync.json`）
+- 支持 JSON **导出 / 导入** 备份（设置 → 数据同步）
 - 周报生成可选 LLM；不上传则完全离线（除你主动配置的 API）
 
 ---
@@ -61,9 +61,9 @@
 ### 环境 · Prerequisites
 
 - **Node.js** 20+
-- **Rust** + **Xcode CLT**（仅 Mac App 打包需要）— 见 [docs/PERSONAL_MAC_APP.md](docs/PERSONAL_MAC_APP.md)
+- **Rust** + **Xcode CLT** — 见 [docs/PERSONAL_MAC_APP.md](docs/PERSONAL_MAC_APP.md)
 
-### Mac App（推荐）· macOS app (recommended)
+### Mac App · macOS app
 
 ```bash
 git clone https://github.com/dqyuki91853-oss/Healthy-Email-APP.git
@@ -71,19 +71,11 @@ cd Healthy-Email-APP
 npm install
 npm run tauri:dev      # 开发窗口
 npm run tauri:build    # 产出 .app → src-tauri/target/release/bundle/macos/健康来信.app
+npm test               # 单元测试（可选）
 ```
 
 首次打开若被 Gatekeeper 拦截：**右键 → 打开**。  
-详细打包与公证说明见 [docs/PERSONAL_MAC_APP.md](docs/PERSONAL_MAC_APP.md)。
-
-### Web 开发 · Web development
-
-```bash
-npm install
-npm run dev            # http://localhost:5173
-npm test
-npm run build
-```
+详细打包、公证与分发给他人见 [docs/PERSONAL_MAC_APP.md](docs/PERSONAL_MAC_APP.md)。
 
 ### 演示数据 · Demo seed
 
@@ -101,8 +93,7 @@ npm run seed:demo
 
 | 命令 | 说明 |
 |------|------|
-| `npm run dev` | Vite 开发服务器 |
-| `npm run tauri:dev` | Tauri + 热更新 |
+| `npm run tauri:dev` | Mac 窗口开发（含热更新） |
 | `npm run tauri:build` | 构建 Mac `.app` / `.dmg` |
 | `npm test` | Vitest 单元测试 |
 | `npm run seed:demo` | 生成 14 天演示数据 |
