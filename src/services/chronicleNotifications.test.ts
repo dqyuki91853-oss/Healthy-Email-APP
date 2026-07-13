@@ -61,6 +61,7 @@ function minimalSnapshot(overrides: Partial<WellnessSnapshot> = {}): WellnessSna
     },
     caseFiles: [],
     bodySeason: null,
+    bpAdvisory: null,
     ...overrides,
   }
 }

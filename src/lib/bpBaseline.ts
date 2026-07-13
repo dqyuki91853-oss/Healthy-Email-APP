@@ -179,7 +179,7 @@ export function buildDailyBpSummaries(
 
     const sysAvg = avg(sysVals)!
     const diaAvg = avg(diaVals)!
-    const { morningSys, eveningSys } = morningEveningAvgs(dayReadings, voiceLogs)
+    const { morningSys } = morningEveningAvgs(dayReadings, voiceLogs)
 
     const prevDate = offsetDateStr(date, -1)
     const prevDay = readings.filter((r) => dateStr(r.measuredAt) === prevDate)

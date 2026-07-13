@@ -322,8 +322,10 @@ export function computeBpAdvisory(
 
   const refSys = todaySummary?.sysAvg ?? latest?.systolicMmHg ?? null
   const refDia = todaySummary?.diaAvg ?? latest?.diastolicMmHg ?? null
-  const baselineDeltaSysPct = roundPct(pctDelta(refSys, baseline?.allDaySysMedian ?? null))
-  const baselineDeltaDiaPct = roundPct(pctDelta(refDia, baseline?.allDayDiaMedian ?? null))
+  const baselineDeltaSysPct =
+    refSys != null ? roundPct(pctDelta(refSys, baseline?.allDaySysMedian ?? null)) : null
+  const baselineDeltaDiaPct =
+    refDia != null ? roundPct(pctDelta(refDia, baseline?.allDayDiaMedian ?? null)) : null
 
   const sys7 = summaries.slice(-7).map((s) => s.sysAvg)
   const variability7d =

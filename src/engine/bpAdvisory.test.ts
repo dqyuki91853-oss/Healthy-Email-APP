@@ -7,7 +7,6 @@ import { buildWellnessSignals } from '../lib/wellnessSignals'
 import { computeBaselines } from '../lib/baselines'
 import { buildDemoBloodPressureReadings, buildDemoWellnessSeed } from '../lib/demoWellnessSeed'
 import type { BloodPressureReading } from '../types/bloodPressure'
-import type { VoiceExtraction } from '../types/voice'
 
 function reading(
   date: string,
